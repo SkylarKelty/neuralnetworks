@@ -2,13 +2,17 @@
 
 namespace KeltyNN\Serializers;
 
-class Image {
+class Image
+{
     /**
      * Serialize a given image for a neural net.
-     * @param  [type] $filename [description]
-     * @return [type]           [description]
+     *
+     * @param [type] $filename [description]
+     *
+     * @return [type] [description]
      */
-    public static function serialize($filename, $network, $greyscale = false, $blackwhite = false) {
+    public static function serialize($filename, $network, $greyscale = false, $blackwhite = false)
+    {
         $max = $network->getInputCount();
 
         $image = new \Imagick($filename);

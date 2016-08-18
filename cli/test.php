@@ -2,14 +2,13 @@
 /**
  * Testing script.
  */
-
-require_once (dirname(__FILE__) . "/../lib.php");
+require_once(dirname(__FILE__) . '/../lib.php');
 
 // Create a Perceptron network.
-$ngte = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . "/../trained/maths/basic/gte.nn");
-$ngt = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . "/../trained/maths/basic/gt.nn");
-$xor = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . "/../trained/maths/basic/xor.nn");
-$negnull = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . "/../trained/maths/advanced/negtonull.nn");
+$ngte = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/gte.nn');
+$ngt = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/gt.nn');
+$xor = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/xor.nn');
+$negnull = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/advanced/negtonull.nn');
 
 // Add test-data to the network.
 $testdata = array();

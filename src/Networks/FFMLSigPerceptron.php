@@ -1,6 +1,6 @@
 <?php
 /**
- * <b>Multi-layer Neural Network in PHP</b>
+ * <b>Multi-layer Neural Network in PHP</b>.
  *
  * Feed forward, multi-layer perceptron network with support for momentum learning and an advanced mechanism to prevent overfitting.
  *
@@ -19,14 +19,17 @@
  *
  * @author E. Akerboom
  * @author {@link http://www.tremani.nl/ Tremani}, {@link http://maps.google.com/maps?f=q&hl=en&q=delft%2C+the+netherlands&ie=UTF8&t=k&om=1&ll=53.014783%2C4.921875&spn=36.882665%2C110.566406&z=4 Delft}, The Netherlands
+ *
  * @since feb 2007
+ *
  * @version 1.1
+ *
  * @license http://opensource.org/licenses/bsd-license.php BSD License
  */
-
 namespace KeltyNN\Networks;
 
-class FFMLSigPerceptron extends FFMLPerceptron {
+class FFMLSigPerceptron extends FFMLPerceptron
+{
     /**
      * Creates a neural network.
      *
@@ -45,23 +48,26 @@ class FFMLSigPerceptron extends FFMLPerceptron {
      *
      * @param array $nodeCount The number of nodes in the consecutive layers.
      */
-    public function __construct($nodeCount) {
-		if (!is_array($nodeCount)) {
-			$nodeCount = func_get_args();
-		}
+    public function __construct($nodeCount)
+    {
+        if (!is_array($nodeCount)) {
+            $nodeCount = func_get_args();
+        }
         parent::__construct($nodeCount);
 
         $this->type = 'FFMLSigPerceptron';
         $this->version = '1.1';
     }
 
-	/**
-	 * Implements the standard (default) activation function for backpropagation networks.
-	 *
-	 * @param float $value The preliminary output to apply this function to
-	 * @return float The final output of the node
-	 */
-	protected function activation($value) {
-		return (1.0 / (1.0 + exp(- $value)));
-	}
+    /**
+     * Implements the standard (default) activation function for backpropagation networks.
+     *
+     * @param float $value The preliminary output to apply this function to
+     *
+     * @return float The final output of the node
+     */
+    protected function activation($value)
+    {
+        return 1.0 / (1.0 + exp(-$value));
+    }
 }
