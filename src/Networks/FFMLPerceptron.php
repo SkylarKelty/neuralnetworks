@@ -225,9 +225,13 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
             for ($node = 0; $node < ($this->nodeCount[$layer]); $node++) {
                 $node_value = 0.0;
 
-                // each node in the previous layer has a connection to this node
+                // each node in the previous layer might have a connection to this node
                 // on basis of this, calculate this node's value
                 for ($prev_node = 0; $prev_node < ($this->nodeCount[$prev_layer]); $prev_node++) {
+                    if (is_null($this->edgeWeight[$prev_layer][$prev_node][$node])) {
+                        continue;
+                    }
+
                     $inputnode_value = $this->nodeValue[$prev_layer][$prev_node];
                     $edge_weight = $this->edgeWeight[$prev_layer][$prev_node][$node];
 
