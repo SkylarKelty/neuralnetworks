@@ -14,14 +14,14 @@ class NeuralNetwork
     /**
      * Get a description.
      */
-    public function get_description() {
+    public function getDescription() {
         return $this->description;
     }
 
     /**
      * Set a description.
      */
-    public function set_description($description) {
+    public function setDescription($description) {
         $this->description = $description;
     }
 
