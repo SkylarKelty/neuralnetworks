@@ -5,14 +5,14 @@
 
 require_once (dirname(__FILE__) . "/../lib.php");
 
-$input = 2;
+$input = 1;
 $output = 1;
 
 $done = array();
-for ($i = 0; $i <= 100000; $i++) {
-    $layer1 = rand(1, 6);
-    $layer2 = rand(0, 6);
-    $layer3 = rand(0, 6);
+for ($i = 1; $i <= 12; $i++) {
+    $layer1 = $i;//rand(1, 6);
+    $layer2 = 0;//rand(0, 6);
+    $layer3 = 0;//rand(0, 6);
     $k = "{$layer1}{$layer2}{$layer3}";
     if (isset($done[$k])) {
         continue;
@@ -27,32 +27,31 @@ for ($i = 0; $i <= 100000; $i++) {
     } else {
         $n = new KeltyNN\Networks\FFMLPerceptron($input, $layer1, $output);
     }
-    $n->setDescription("This network will output 1 if both inputs are equal, if not it will output -1.");
+    $n->setTitle("NegToNull");
+    $n->setDescription("Given an input, will return 1 if above 0 or 0 if 0 or below.");
     $n->setVerbose(false);
 
     // Add test-data to the network.
-    for ($i = 0; $i < 100; $i++) {
-        $a = rand(1, 500);
-        $b = rand(1, 500);
-        if (rand(1, 2) == 1) {
-            $n->addTestData(array($a, $a), array(1));
-        } else {
-            $n->addTestData(array($a, $b), array($a == $b ? 1 : -1));
-        }
+    $n->addTestData(array(1), array(1));
+    $n->addTestData(array(0), array(0));
+    $n->addTestData(array(-1), array(0));
+    for ($j = 0; $j < 100; $j++) {
+        $a = rand(-500, 500);
+        $n->addTestData(array($a), array($a > 0 ? 1 : 0));
     }
 
     // we try training the network for at most $max times
-    $max = 2;
-    $i = 0;
+    $max = 10;
+    $j = 0;
 
     // Train the network.
-    while (!($success = $n->train(1000, 0.1)) && ++$i < $max) {
+    while (!($success = $n->train(1000, 0.001)) && ++$j < $max) {
     }
 
     // print a message if the network was succesfully trained
     if ($success) {
         $epochs = $n->getEpoch();
-        $n->save(dirname(__FILE__) . "/../trained/maths/basic/eq.nn");
+        $n->save(dirname(__FILE__) . "/../trained/maths/advanced/negtonull.nn");
     	echo "{$layer1} | {$layer2} | {$layer3}\n";
     	echo "Success in $epochs training rounds!\n";
         exit(0);

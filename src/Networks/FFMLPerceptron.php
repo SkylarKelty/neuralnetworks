@@ -71,7 +71,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	 */
 	public function __construct($nodeCount) {
         $this->type = 'FFMLPerceptron';
-        $this->version = '1.1';
+        $this->version = '3.0';
 
 		if (!is_array($nodeCount)) {
 			$nodeCount = func_get_args();
@@ -97,14 +97,20 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	public function export()
 	{
 		return array(
+			'type' => $this->type,
+			'version' => $this->version,
+			'title' => $this->title,
+			'description' => $this->description,
 			'layerCount' => $this->layerCount,
 			'nodeCount' => $this->nodeCount,
 			'edgeWeight' => $this->edgeWeight,
 			'nodeThreshold' => $this->nodeThreshold,
-			'learningRate' => $this->learningrate,
+			'learningRate' => $this->learningRate,
 			'momentum' => $this->momentum,
 			'isVerbose' => $this->isVerbose,
 			'weightsInitialized' => $this->weightsInitialized,
+			'trainDataID' => $this->trainDataID,
+			'controlDataID' => $this->controlDataID,
 		);
 	}
 
@@ -222,9 +228,14 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	 * @return float The final output of the node
 	 */
 	protected function activation($value) {
-		//return 1.7159 * tanh(0.6 * $value);
-		//return tanh($value) + $value; // Avoid flat spots.
-		return tanh($value);
+        switch ($this->version) {
+            case '3.0':
+                return 1.7159 * tanh(0.6 * $value);
+            case '2.0':
+                return tanh($value) + $value; // Avoid flat spots.
+            default:
+                return tanh($value);
+        }
 	}
 
 	/**
@@ -333,88 +344,6 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	 */
 	public function isVerbose() {
 		return $this->isVerbose;
-	}
-
-	/**
-	 * Loads a neural network from a file saved by the 'save()' function. Clears
-	 * the training and control data added so far.
-	 *
-	 * @param string $filename The filename to load the network from
-	 * @return boolean 'true' on success, 'false' otherwise
-	 */
-	public function restore($data) {
-		if (array_key_exists("networktype", $data)) {
-            $this->type = unserialize($data['networktype']);
-        }
-
-		if (array_key_exists("networkversion", $data)) {
-            $this->version = unserialize($data['networkversion']);
-        }
-
-		if (array_key_exists("networkdescription", $data)) {
-            $this->description = unserialize($data['networkdescription']);
-        }
-
-		if (!array_key_exists("edges", $data) || !array_key_exists("thresholds", $data)) {
-    		return false;
-        }
-
-		// make sure all standard preparations performed
-		$this->initWeights();
-
-		// load data from file
-		$this->edgeWeight = unserialize($data['edges']);
-		$this->nodeThreshold = unserialize($data['thresholds']);
-
-		$this->weightsInitialized = true;
-
-		// load IDs of training and control set
-		if (array_key_exists("training_data", $data) && array_key_exists("control_data", $data)) {
-
-			// load the IDs
-			$this->trainDataID = unserialize($data['training_data']);
-			$this->controlDataID = unserialize($data['control_data']);
-
-			// if we do not reset the training and control data here, then we end up
-			// with a bunch of IDs that do not refer to the actual data we're training
-			// the network with.
-			$this->controlInputs = array();
-			$this->controlOutput = array();
-
-			$this->trainInputs = array();
-			$this->trainOutput = array();
-		}
-
-		return true;
-	}
-
-	/**
-	 * Saves a neural network to a file
-	 *
-	 * @param string $filename The filename to save the neural network to
-	 * @return boolean 'true' on success, 'false' otherwise
-	 */
-	public function save($filename) {
-		$f = fopen($filename, "w");
-		if ($f) {
-			fwrite($f, "[info]");
-			fwrite($f, "\r\nnetworktype = \"".serialize($this->type)."\"");
-			fwrite($f, "\r\nnetworkversion = \"".serialize($this->version)."\"");
-			fwrite($f, "\r\nnetworkdescription = \"".serialize($this->description)."\"");
-			fwrite($f, "\r\n");
-			fwrite($f, "[weights]");
-			fwrite($f, "\r\nedges = \"".serialize($this->edgeWeight)."\"");
-			fwrite($f, "\r\nthresholds = \"".serialize($this->nodeThreshold)."\"");
-			fwrite($f, "\r\n");
-			fwrite($f, "[identifiers]");
-			fwrite($f, "\r\ntraining_data = \"".serialize($this->trainDataID)."\"");
-			fwrite($f, "\r\ncontrol_data = \"".serialize($this->controlDataID)."\"");
-			fclose($f);
-
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
@@ -650,7 +579,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	/**
 	 * Randomise the weights in the neural network
 	 */
-	private function initWeights() {
+	protected function initWeights() {
 		// assign a random value to each edge between the layers, and randomise each threshold
 		//
 		// 1. start at layer '1' (so skip the input layer)

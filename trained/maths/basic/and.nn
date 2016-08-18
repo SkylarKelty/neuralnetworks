@@ -1,10 +1,1 @@
-[info]
-networktype = "s:14:"FFMLPerceptron";"
-networkversion = "s:3:"1.1";"
-networkdescription = "s:81:"Given two inputs, this will output 1 if both are 1 and 0 if both, or either are 0";"
-[weights]
-edges = "a:2:{i:0;a:2:{i:0;a:2:{i:0;d:0.93501457222885342;i:1;d:-1.4871577799007305;}i:1;a:2:{i:0;d:0.97001931411973352;i:1;d:-1.5055070925091156;}}i:1;a:2:{i:0;a:1:{i:0;d:-1.5106161402474063;}i:1;a:1:{i:0;d:-2.4552251984302211;}}}"
-thresholds = "a:2:{i:1;a:2:{i:0;d:0.41369350393298093;i:1;d:-1.936075461995616;}i:2;a:1:{i:0;d:-1.7588186873015148;}}"
-[identifiers]
-training_data = "a:4:{i:0;N;i:1;N;i:2;N;i:3;N;}"
-control_data = "a:0:{}"
+a:14:{s:4:"type";s:14:"FFMLPerceptron";s:7:"version";s:3:"3.0";s:5:"title";s:14:"AND logic gate";s:11:"description";s:83:"Given two inputs, this will output 1 if both are 1 and 0 if both, or either, are 0.";s:10:"layerCount";i:3;s:9:"nodeCount";a:3:{i:0;i:2;i:1;i:3;i:2;i:1;}s:10:"edgeWeight";a:2:{i:0;a:2:{i:0;a:3:{i:0;d:-0.30978336260090039;i:1;d:1.6394670531488251;i:2;d:-0.69309423533222581;}i:1;a:3:{i:0;d:0.31386819874871541;i:1;d:1.5576634355743766;i:2;d:-1.0582507029795722;}}i:1;a:3:{i:0;a:1:{i:0;d:0.69950556437944134;}i:1;a:1:{i:0;d:1.0892693975157255;}i:2;a:1:{i:0;d:0.93184419596710277;}}}s:13:"nodeThreshold";a:2:{i:1;a:3:{i:0;d:-0.70224815364755144;i:1;d:2.4261815837358696;i:2;d:-0.23501672932184339;}i:2;a:1:{i:0;d:-0.9737188701208086;}}s:12:"learningRate";a:1:{i:0;d:0.10000000000000001;}s:8:"momentum";d:0.80000000000000004;s:9:"isVerbose";b:0;s:18:"weightsInitialized";b:0;s:11:"trainDataID";a:4:{i:0;N;i:1;N;i:2;N;i:3;N;}s:13:"controlDataID";a:0:{}}
