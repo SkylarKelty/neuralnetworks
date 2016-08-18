@@ -16,39 +16,57 @@
 		<?php
 require_once ("lib.php");
 
-// Create a new neural network with 3 input neurons,
-// 4 hidden neurons, and 1 output neuron
-$n = new KeltyNN\NeuralNetwork(2, 6, 1);
-$n->setVerbose(false);
+for ($i = 0; $i <= 1000; $i++) {
+    $layer1 = rand(1, 6);
+    $layer2 = rand(0, 6);
+    $layer3 = rand(0, 6);
 
-// Add test-data to the network. In this case,
-// we want the network to learn the '>'-function
-$n->addTestData(array (500, 200), array (1));
-$n->addTestData(array (300, 20), array (1));
-$n->addTestData(array (201, 70), array (1));
-$n->addTestData(array (700, 300), array (1));
-$n->addTestData(array (520, 100), array (1));
-$n->addTestData(array (520, 2000), array (0));
-$n->addTestData(array (50, 200), array (0));
-$n->addTestData(array (20, 50), array (0));
-$n->addTestData(array (500, 1000), array (0));
-$n->addTestData(array (200, 500), array (0));
+    // Create a new neural network with 3 input neurons,
+    // 4 hidden neurons, and 1 output neuron
+    if ($layer2 && $layer3) {
+        $n = new KeltyNN\NeuralNetwork(2, $layer1, $layer2, $layer3, 1);
+    } else if ($layer2) {
+        $n = new KeltyNN\NeuralNetwork(2, $layer1, $layer2, 1);
+    } else {
+        $n = new KeltyNN\NeuralNetwork(2, $layer1, 1);
+    }
+    $n->setVerbose(false);
 
-// we try training the network for at most $max times
-$max = 6;
-$i = 0;
+    // Add test-data to the network. In this case,
+    // we want the network to learn the '>'-function
+    $n->addTestData(array (500, 200), array (1));
+    $n->addTestData(array (300, 20), array (1));
+    $n->addTestData(array (201, 70), array (1));
+    $n->addTestData(array (700, 300), array (1));
+    $n->addTestData(array (520, 100), array (1));
+    $n->addTestData(array (100, 100), array (0));
+    $n->addTestData(array (130, 130), array (0));
+    $n->addTestData(array (10, 10), array (0));
+    $n->addTestData(array (1000, 1000), array (0));
+    $n->addTestData(array (80, 80), array (0));
+    $n->addTestData(array (520, 2000), array (-1));
+    $n->addTestData(array (50, 200), array (-1));
+    $n->addTestData(array (20, 50), array (-1));
+    $n->addTestData(array (500, 1000), array (-1));
+    $n->addTestData(array (200, 500), array (-1));
 
-echo "<h1>Learning the gt function</h1>";
-// train the network in max 1000 epochs, with a max squared error of 0.01
-while (!($success = $n->train(10000, 0.001)) && ++$i < $max) {
-	echo "Round $i: No success...<br />";
+    // we try training the network for at most $max times
+    $max = 6;
+    $i = 0;
+
+    // train the network in max 1000 epochs, with a max squared error of 0.01
+    while (!($success = $n->train(1000, 0.01)) && ++$i < $max) {
+    }
+    // print a message if the network was succesfully trained
+    if ($success) {
+        $epochs = $n->getEpoch();
+        $n->save(dirname(__FILE__) . "/trained/maths/basic/gt.nn");
+    	echo "{$layer1} | {$layer2} | {$layer3}<br />";
+    	echo "Success in $epochs training rounds!<br />";
+        break;
+    }
 }
-// print a message if the network was succesfully trained
-if ($success) {
-    $epochs = $n->getEpoch();
-    $n->save(dirname(__FILE__) . "/trained/maths/basic/gt.nn");
-	echo "Success in $epochs training rounds!<br />";
-}
+
 echo "<h2>Result</h2>";
 echo "<div class='result'>";
 // in any case, we print the output of the neural network
