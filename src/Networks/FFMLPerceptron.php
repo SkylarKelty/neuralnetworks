@@ -95,6 +95,22 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
     }
 
     /**
+     * Return the number of hidden neurons.
+     */
+    public function getHiddenCounts()
+    {
+        return array_slice($this->nodeCount, 1, -1);
+    }
+
+    /**
+     * Return the number of output neurons.
+     */
+    public function getOutputCount()
+    {
+        return $this->nodeCount[count($this->nodeCount) - 1];
+    }
+
+    /**
      * Exports the neural network.
      *
      * @returns array

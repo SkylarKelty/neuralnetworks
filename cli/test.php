@@ -10,6 +10,9 @@ $ngt = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/
 $xor = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/xor.nn');
 $negnull = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/advanced/negtonull.nn');
 
+$ngtenull = KeltyNN\NeuralNetwork::combine($ngte, $negnull);
+$ngtnull = KeltyNN\NeuralNetwork::combine($ngt, $negnull);
+
 // Add test-data to the network.
 $testdata = array();
 for ($i = 0; $i < 100; $i++) {
@@ -29,14 +32,10 @@ for ($i = 0; $i < 100; $i++) {
         $b = $a;
     }
 
-    $resulta = $ngte->calculate(array($a, $b));
-    $resulta = round($resulta[0]);
-    $resulta = $negnull->calculate(array($resulta));
+    $resulta = $ngtenull->calculate(array($a, $b));
     $resulta = round($resulta[0]);
 
-    $resultb = $ngt->calculate(array($a, $b));
-    $resultb = round($resultb[0]);
-    $resultb = $negnull->calculate(array($resultb));
+    $resultb = $ngtnull->calculate(array($a, $b));
     $resultb = round($resultb[0]);
 
     $result = $xor->calculate(array($resulta, $resultb));

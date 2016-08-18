@@ -122,6 +122,49 @@ class NeuralNetwork
      */
     public static function combine($networka, $networkb)
     {
-        // TODO.
+        // First, sanity checks.
+        if ($networka->getOutputCount() !== $networkb->getInputCount()) {
+            throw new \InvalidArgumentException("Number of output nodes on network A must equal number of input nodes on network b!");
+        }
+
+        if ($networka->type !== $networkb->type) {
+            throw new \InvalidArgumentException("Type of network A must equal type of network b!");
+        }
+
+        if ($networka->version !== $networkb->version) {
+            throw new \InvalidArgumentException("Version of network A must equal version of network b!");
+        }
+
+        // Good! Create a new net.
+        $input = $networka->getInputCount();
+        $output = $networkb->getOutputCount();
+
+        // Work out hidden layers.
+        $hiddena = $networka->getHiddenCounts();
+        $hiddenb = $networkb->getHiddenCounts();
+        $hidden = array_merge($hiddena, array($networkb->getInputCount()), $hiddenb);
+
+        // Work out total new number of neurons.
+        $total = array_merge(array($input), $hidden, array($output));
+
+        // Create new neural network.
+        $class = '\\KeltyNN\\Networks\\' . $networka->type;
+        $networkc = new $class($total);
+
+        // Now, restore nodes into network C.
+        $layernum = 1;
+        foreach (array_merge($networka->nodeThreshold, $networkb->nodeThreshold) as $layer) {
+            $networkc->nodeThreshold[$layernum] = $layer;
+            $layernum++;
+        }
+
+        // Now restore interconnects into network C.
+        $layernum = 0;
+        foreach (array_merge($networka->edgeWeight, $networkb->edgeWeight) as $layer) {
+            $networkc->edgeWeight[$layernum] = $layer;
+            $layernum++;
+        }
+
+        return $networkc;
     }
 }
