@@ -1,6 +1,7 @@
 [info]
 networktype = "s:14:"FFMLPerceptron";"
 networkversion = "s:3:"1.1";"
+networkdescription = "s:97:"Given two inputs, this will output 1 if either, but not both, inputs are 1 else it will output -1";"
 [weights]
 edges = "a:2:{i:0;a:2:{i:0;a:2:{i:0;d:1.4139008185982049;i:1;d:-1.382080238871251;}i:1;a:2:{i:0;d:1.4803549387031285;i:1;d:-1.438028672170883;}}i:1;a:2:{i:0;a:1:{i:0;d:3.034174833983259;}i:1;a:1:{i:0;d:2.7931829397435055;}}}"
 thresholds = "a:2:{i:1;a:2:{i:0;d:0.5985342816711966;i:1;d:-1.9826752285451092;}i:2;a:1:{i:0;d:1.0626494835224025;}}"

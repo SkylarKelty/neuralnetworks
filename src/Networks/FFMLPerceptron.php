@@ -51,9 +51,6 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	protected $errorControlset;
 	protected $success;
 
-    protected $type = 'FFMLPerceptron';
-    protected $version = '1.1';
-
 	/**
 	 * Creates a neural network.
 	 *
@@ -73,6 +70,9 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	 * @param array $nodeCount The number of nodes in the consecutive layers.
 	 */
 	public function __construct($nodeCount) {
+        $this->type = 'FFMLPerceptron';
+        $this->version = '1.1';
+
 		if (!is_array($nodeCount)) {
 			$nodeCount = func_get_args();
 		}
@@ -349,6 +349,10 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
             $this->version = unserialize($data['networkversion']);
         }
 
+		if (array_key_exists("networkdescription", $data)) {
+            $this->description = unserialize($data['networkdescription']);
+        }
+
 		if (!array_key_exists("edges", $data) || !array_key_exists("thresholds", $data)) {
     		return false;
         }
@@ -394,6 +398,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 			fwrite($f, "[info]");
 			fwrite($f, "\r\nnetworktype = \"".serialize($this->type)."\"");
 			fwrite($f, "\r\nnetworkversion = \"".serialize($this->version)."\"");
+			fwrite($f, "\r\nnetworkdescription = \"".serialize($this->description)."\"");
 			fwrite($f, "\r\n");
 			fwrite($f, "[weights]");
 			fwrite($f, "\r\nedges = \"".serialize($this->edgeWeight)."\"");

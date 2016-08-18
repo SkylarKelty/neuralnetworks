@@ -7,6 +7,24 @@ namespace KeltyNN;
 
 class NeuralNetwork
 {
+    protected $type;
+    protected $version;
+    protected $description;
+
+    /**
+     * Get a description.
+     */
+    public function get_description() {
+        return $this->description;
+    }
+
+    /**
+     * Set a description.
+     */
+    public function set_description($description) {
+        $this->description = $description;
+    }
+
 	/**
 	 * Loads a neural network from a file saved by the 'save()' function. Clears
 	 * the training and control data added so far.
