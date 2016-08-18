@@ -35,7 +35,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	protected $layerCount = 0;
 	protected $previousWeightCorrection = array ();
 	protected $momentum = 0.8;
-	protected $isVerbose = true;
+	protected $isVerbose = false;
 	protected $weightsInitialized = false;
 
 	public $trainInputs = array ();
@@ -222,6 +222,8 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	 * @return float The final output of the node
 	 */
 	protected function activation($value) {
+		//return 1.7159 * tanh(0.6 * $value);
+		//return tanh($value) + $value; // Avoid flat spots.
 		return tanh($value);
 	}
 
@@ -681,7 +683,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork {
 	* @param array $output The output obtained by the network
 	* @param array $desired_output The desired output
 	*/
-	private function backpropagate($output, $desired_output) {
+	protected function backpropagate($output, $desired_output) {
 
 		$errorgradient = array ();
 		$outputlayer = $this->layerCount - 1;
