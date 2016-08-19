@@ -167,4 +167,84 @@ class NeuralNetwork
 
         return $networkc;
     }
+
+    /**
+     * Adds two neural networks such that the two networks share input nodes
+     * but provide their own output nodes.
+     */
+    public static function add($networka, $networkb)
+    {
+        // First, sanity checks.
+        if ($networka->getInputCount() !== $networkb->getInputCount()) {
+            throw new \InvalidArgumentException("Number of input nodes on network A must equal number of input nodes on network b!");
+        }
+
+        if ($networka->type !== $networkb->type) {
+            throw new \InvalidArgumentException("Type of network A must equal type of network b!");
+        }
+
+        if ($networka->version !== $networkb->version) {
+            throw new \InvalidArgumentException("Version of network A must equal version of network b!");
+        }
+
+        // Good! Create a new net.
+        $input = $networka->getInputCount();
+        $output = $networka->getOutputCount() + $networkb->getOutputCount();
+        $hiddena = $networka->getHiddenCounts();
+        $hiddenb = $networkb->getHiddenCounts();
+
+        $hidden = array();
+        for ($i = 0; $i < max(count($hiddena), count($hiddenb)); $i++) {
+            $hidden[] = $hiddena[$i] + $hiddenb[$i];
+        }
+
+        // Work out total new number of neurons.
+        $total = array_merge(array($input), $hidden, array($output));
+
+        // Create new neural network.
+        $class = '\\KeltyNN\\Networks\\' . $networka->type;
+        $networkc = new $class($total);
+
+        // Now, restore nodes into network C.
+        $networkc->nodeThreshold = array();
+        foreach ($networka->nodeThreshold as $layernum => $layer) {
+            foreach ($layer as $node) {
+                $networkc->nodeThreshold[$layernum][] = $node;
+            }
+        }
+        foreach ($networkb->nodeThreshold as $layernum => $layer) {
+            foreach ($layer as $node) {
+                $networkc->nodeThreshold[$layernum][] = $node;
+            }
+        }
+
+        // TODO - also, fill in any blanks we might need at the end of a net, or support multi-layer edges.
+        // If one net is longer than the other.
+
+        // Now restore interconnects into network C.
+        $networkc->edgeWeight = array();
+        foreach ($networka->edgeWeight as $layernum => $layer) {
+            $networkc->edgeWeight[$layernum] = array();
+            foreach ($layer as $edge) {
+                $networkc->edgeWeight[$layernum][] = $edge;
+            }
+        }
+        foreach ($networkb->edgeWeight as $layernum => $layer) {
+            foreach ($layer as $nodenum => $edge) {
+                foreach ($edge as $weightnum => $weight) {
+                    if ($layernum == 0) {
+                        $networkc->edgeWeight[$layernum][$nodenum][] = $weight;
+                        continue;
+                    }
+
+                    // Where do we start?
+                    $nodenumpad = count($networka->edgeWeight[$layernum]);
+                    $weightnum += count($networka->nodeThreshold[$layernum + 1]);
+                    $networkc->edgeWeight[$layernum][$nodenum + $nodenumpad][$weightnum] = $weight;
+                }
+            }
+        }
+
+        return $networkc;
+    }
 }

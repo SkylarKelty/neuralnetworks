@@ -13,6 +13,13 @@ $negnull = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/ad
 $ngtenull = KeltyNN\NeuralNetwork::combine($ngte, $negnull);
 $ngtnull = KeltyNN\NeuralNetwork::combine($ngt, $negnull);
 
+$prexor = KeltyNN\NeuralNetwork::add($ngtenull, $ngtnull);
+
+$eq = KeltyNN\NeuralNetwork::combine($prexor, $xor);
+$eq->setTitle('Equals');
+$eq->setDescription('Given two inputs, will return 1 if they are equal or -1 if they are not.');
+$eq->save(dirname(__FILE__) . '/../trained/maths/advanced/equals.nn');
+
 // Add test-data to the network.
 $testdata = array();
 for ($i = 0; $i < 100; $i++) {
@@ -32,14 +39,8 @@ for ($i = 0; $i < 100; $i++) {
         $b = $a;
     }
 
-    $resulta = $ngtenull->calculate(array($a, $b));
-    $resulta = round($resulta[0]);
-
-    $resultb = $ngtnull->calculate(array($a, $b));
-    $resultb = round($resultb[0]);
-
-    $result = $xor->calculate(array($resulta, $resultb));
+    $result = $eq->calculate(array($a, $b));
     $result = round($result[0]) == 1 ? 1 : -1;
 
-    echo "{$a} == {$b} = {$resulta[0]} {$resultb[0]} {$result}\n";
+    echo "{$a} == {$b} = {$result}\n";
 }

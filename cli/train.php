@@ -4,7 +4,7 @@
  */
 require_once(dirname(__FILE__) . '/../lib.php');
 
-$input = 1;
+$input = 2;
 $output = 1;
 
 $done = array();
@@ -26,18 +26,15 @@ for ($i = 1; $i <= 12; $i++) {
     } else {
         $n = new KeltyNN\Networks\FFMLPerceptron($input, $layer1, $output);
     }
-    $n->setTitle('NegToNull');
-    $n->setDescription('Given an input, will return 1 if above 0 or 0 if 0 or below.');
+    $n->setTitle('AND logic gate');
+    $n->setDescription('Given two inputs, this will output 1 if both are 1 and -1 if both, or either, are 0.');
     $n->setVerbose(false);
 
     // Add test-data to the network.
-    $n->addTestData(array(1), array(1));
-    $n->addTestData(array(0), array(0));
-    $n->addTestData(array(-1), array(0));
-    for ($j = 0; $j < 100; $j++) {
-        $a = rand(-500, 500);
-        $n->addTestData(array($a), array($a > 0 ? 1 : 0));
-    }
+    $n->addTestData(array(1, 1), array(1));
+    $n->addTestData(array(0, 1), array(-1));
+    $n->addTestData(array(1, 0), array(-1));
+    $n->addTestData(array(0, 0), array(-1));
 
     // we try training the network for at most $max times
     $max = 10;
@@ -50,7 +47,7 @@ for ($i = 1; $i <= 12; $i++) {
     // print a message if the network was succesfully trained
     if ($success) {
         $epochs = $n->getEpoch();
-        $n->save(dirname(__FILE__) . '/../trained/maths/advanced/negtonull.nn');
+        $n->save(dirname(__FILE__) . '/../trained/maths/basic/and.nn');
         echo "{$layer1} | {$layer2} | {$layer3}\n";
         echo "Success in $epochs training rounds!\n";
         exit(0);
