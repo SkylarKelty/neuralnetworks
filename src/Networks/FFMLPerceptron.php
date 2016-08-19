@@ -32,8 +32,8 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
 {
     protected $nodeCount = array();
     protected $nodeValue = array();
-    protected $nodeThreshold = array();
-    protected $edgeWeight = array();
+    public $nodeThreshold = array();
+    public $edgeWeight = array();
     protected $learningRate = array(0.1);
     protected $layerCount = 0;
     protected $previousWeightCorrection = array();
