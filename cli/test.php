@@ -5,20 +5,7 @@
 require_once(dirname(__FILE__) . '/../lib.php');
 
 // Create a Perceptron network.
-$ngte = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/gte.nn');
-$ngt = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/gt.nn');
-$xor = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/basic/xor.nn');
-$negnull = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/advanced/negtonull.nn');
-
-$ngtenull = KeltyNN\NeuralNetwork::combine($ngte, $negnull);
-$ngtnull = KeltyNN\NeuralNetwork::combine($ngt, $negnull);
-
-$prexor = KeltyNN\NeuralNetwork::add($ngtenull, $ngtnull);
-
-$eq = KeltyNN\NeuralNetwork::combine($prexor, $xor);
-$eq->setTitle('Equals');
-$eq->setDescription('Given two inputs, will return 1 if they are equal or -1 if they are not.');
-$eq->save(dirname(__FILE__) . '/../trained/maths/advanced/equals.nn');
+$eq = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/../trained/maths/advanced/equals.nn');
 
 // Add test-data to the network.
 $testdata = array();
