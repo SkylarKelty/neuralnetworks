@@ -55,8 +55,8 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/b
           // create a network
           var container = document.getElementById('network');
           var data = {
-            nodes: nodes,
-            edges: edges
+              nodes: nodes,
+              edges: edges
           };
             var options = {
                 layout: {
