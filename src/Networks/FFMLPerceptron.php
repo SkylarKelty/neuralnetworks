@@ -203,6 +203,22 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
     }
 
     /**
+     * Get all backward connections for this node.
+     */
+    protected function getPrevLayer($layer, $node) {
+        $prev_layer = $layer - 1;
+        $result = array($prev_layer => array());
+
+        for ($prev_node = 0; $prev_node < ($this->nodeCount[$prev_layer]); $prev_node++) {
+            if (isset($this->edgeWeight[$prev_layer][$prev_node][$node])) {
+                $result[$prev_layer][] = $prev_node;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Calculate the output of the neural network for a given input vector.
      *
      * @param array $input The vector to calculate

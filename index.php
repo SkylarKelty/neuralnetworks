@@ -1,12 +1,12 @@
 <?php
 require_once(dirname(__FILE__) . '/lib.php');
 
-$network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/advanced/equals.nn');
+$network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/basic/flex_xor.nn');
 ?>
 <html>
 	<head>
 		<title><?php echo $network->getTitle(); ?></title>
-		<link href='//cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.css' rel='stylesheet' type='text/css'>
+		<link href='//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<div class='container'>
@@ -14,7 +14,7 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/a
             <div id="network"></div>
 		</div>
 
-        <script src="//cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
 
         <script type="text/javascript">
           // create an array with nodes
@@ -36,9 +36,16 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/a
               <?php
               foreach ($network->edgeWeight as $layer => $nodes) {
                   foreach ($nodes as $from => $weights) {
+					  $nextlayer = $layer + 1;
                       foreach ($weights as $to => $weight) {
-                          $nextlayer = $layer + 1;
-                          echo "{from: '{$layer}_{$from}', to: '{$nextlayer}_{$to}', label: '{$weight}'},\n";
+						  // Support FlexNet based nets.
+						  if (is_string($to)) {
+							  $strto = $to;
+						  } else {
+							  $strto = "{$nextlayer}_{$to}";
+						  }
+
+                          echo "{from: '{$layer}_{$from}', to: '{$strto}', label: '{$weight}'},\n";
                       }
                   }
               }

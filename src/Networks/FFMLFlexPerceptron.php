@@ -120,9 +120,9 @@ class FFMLFlexPerceptron extends FFMLPerceptron
     }
 
     /**
-     * Get all connections for this node.
+     * Get all backward connections for this node.
      */
-    protected function getConnectedNodes($layer, $node) {
+    protected function getPrevLayer($layer, $node) {
         if (isset($this->layerConnectors["{$layer}_{$node}"])) {
             return $this->layerConnectors["{$layer}_{$node}"];
         }
@@ -160,7 +160,7 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                     }
                 } else {
                     // 5. This node is connected to random nodes.
-                    $connected = $this->getConnectedNodes($layer, $node);
+                    $connected = $this->getPrevLayer($layer, $node);
                     foreach ($connected as $ilayer => $inodes) {
                         foreach ($inodes as $inode) {
                             // This is the 'edge' that needs to be reset / initialised
@@ -219,7 +219,7 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                 $prev_layer = $layer - 1;
                 $learning_rate = $this->getlearningRate($prev_layer);
 
-                $connected = $this->getConnectedNodes($layer, $node);
+                $connected = $this->getPrevLayer($layer, $node);
                 foreach ($connected as $prev_layer => $prev_indexes) {
                     foreach ($prev_indexes as $prev_index) {
                         // 2a. obtain nodeValue, edgeWeight and learning rate
