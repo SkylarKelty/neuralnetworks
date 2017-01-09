@@ -39,6 +39,46 @@ class FFMLFlexPerceptron extends FFMLPerceptron
     }
 
     /**
+     * Upgrade a standard perceptron to a flex perceptron.
+     */
+    public static function upgrade($data) {
+        $data['type'] = 'FFMLFlexPerceptron';
+        $data['version'] = '1.1';
+        $data['designed'] = true;
+
+        // Upgrade edge weights to new format.
+        $newedgeWeight = array();
+        $layerConnectors = array();
+        foreach ($data['edgeWeight'] as $layer => $nodes) {
+            $newedgeWeight[$layer] = array();
+            $tolayer = $layer++;
+            foreach ($nodes as $node => $links) {
+                $newedgeWeight[$layer][$node] = array();
+                foreach ($links as $tonode => $weight) {
+                    $newedgeWeight[$layer][$node]["{$tolayer}_{$tonode}"] = $weight;
+
+                    if (!isset($layerConnectors["{$tolayer}_{$tonode}"])) {
+                        $layerConnectors["{$tolayer}_{$tonode}"] = array();
+                    }
+
+                    if (!isset($layerConnectors["{$tolayer}_{$tonode}"][$layer])) {
+                        $layerConnectors["{$tolayer}_{$tonode}"][$layer] = array();
+                    }
+
+                    if (!in_array($node, $layerConnectors["{$tolayer}_{$tonode}"][$layer])) {
+                        $layerConnectors["{$tolayer}_{$tonode}"][$layer][] = $node;
+                    }
+                }
+            }
+        }
+
+        $data['edgeWeight'] = $newedgeWeight;
+        $data['layerConnectors'] = $layerConnectors;
+
+        return $data;
+    }
+
+    /**
      * Exports the neural network.
      *
      * @returns array
