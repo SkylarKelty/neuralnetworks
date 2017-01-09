@@ -3,8 +3,6 @@
  * Manually create an optimised XOR.
  */
 
-// TODO - train properly with this model.
-
 require_once(dirname(__FILE__) . '/../lib.php');
 
 $data = file_get_contents(dirname(__FILE__) . "/../trained/maths/basic/xor.nn");
