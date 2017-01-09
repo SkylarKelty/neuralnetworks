@@ -1,12 +1,12 @@
 <?php
 /**
- * Linear Perceptron.
+ * Leaky RELU network.
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD License
  */
 namespace KeltyNN\Networks;
 
-class FFMLLinearPerceptron extends FFMLPerceptron
+class FFMLLeakyRELUPerceptron extends FFMLPerceptron
 {
     /**
      * Creates a neural network.
@@ -33,7 +33,7 @@ class FFMLLinearPerceptron extends FFMLPerceptron
         }
         parent::__construct($nodeCount);
 
-        $this->type = 'FFMLLinearPerceptron';
+        $this->type = 'FFMLLeakyRELUPerceptron';
         $this->version = '1.1';
     }
 
@@ -46,7 +46,7 @@ class FFMLLinearPerceptron extends FFMLPerceptron
      */
     protected function activation($value)
     {
-        return $value;
+        return ($value >= 0) ? $value : 0.01 * $value;
     }
 
     /**
@@ -59,6 +59,6 @@ class FFMLLinearPerceptron extends FFMLPerceptron
      */
     protected function derivativeActivation($value)
     {
-        return 1.0;
+        return ($value >= 0) ?  1.0 : 0.01 * $value;
     }
 }
