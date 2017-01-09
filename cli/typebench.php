@@ -15,15 +15,15 @@ foreach (array(
 ) as $classname) {
     $time = microtime(True);
     // Create a Perceptron network.
-    $n = new $classname(2, 1, 1);
-    $n->setTitle('AND logic gate');
-    $n->setDescription('Given two inputs, this will output 1 if both are 1 and -1 if both, or either, are 0.');
+    $n = new $classname(2, 2, 1);
+    $n->setTitle('XOR logic gate');
+    $n->setDescription('Given two inputs, this will output 1 if only one input is 1 else it will output 0.');
     $n->setVerbose(false);
 
     // Add test-data to the network.
-    $n->addTestData(array(1, 0), array(0));
-    $n->addTestData(array(1, 1), array(1));
-    $n->addTestData(array(0, 1), array(0));
+    $n->addTestData(array(1, 0), array(1));
+    $n->addTestData(array(1, 1), array(0));
+    $n->addTestData(array(0, 1), array(1));
     $n->addTestData(array(0, 0), array(0));
 
     // we try training the network for at most $max times
@@ -40,9 +40,8 @@ foreach (array(
         $time = microtime(True) - $time;
         echo "{$classname} - Success in {$epochs} training rounds over {$j} attempts in {$time}s.\n";
 
-        if ($classname == 'KeltyNN\\Networks\\FFMLRELUPerceptron') {
-            $n->save(dirname(__FILE__) . '/../trained/maths/basic/and.nn');
-        }
+        $n->save(dirname(__FILE__) . '/../trained/maths/basic/xor.nn');
+        exit(0);
     } else {
         echo "{$classname} - failed.\n";
     }
