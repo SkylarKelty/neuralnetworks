@@ -65,22 +65,18 @@ class FFMLFlexPerceptron extends FFMLPerceptron
 
         // iterate the hidden layers
         for ($layer = 1; $layer < $this->layerCount; $layer++) {
-            $prev_layer = $layer - 1;
-
             // iterate each node in this layer
             for ($node = 0; $node < ($this->nodeCount[$layer]); $node++) {
                 $node_value = 0.0;
 
                 // Any node in the any layer might have a connection to this node
                 // on basis of this, calculate this node's value
-                if (isset($this->layerConnectors["{$layer}_{$node}"])) {
-                    foreach ($this->layerConnectors["{$layer}_{$node}"] as $ilayer => $inodes) {
+                $str = "{$layer}_{$node}";
+                if (isset($this->layerConnectors[$str])) {
+                    foreach ($this->layerConnectors[$str] as $ilayer => $inodes) {
                         foreach ($inodes as $inode) {
-                            if (!isset($this->nodeValue[$ilayer]) || !isset($this->nodeValue[$ilayer][$inode])) {
-                                echo "{$layer}_{$node}" . ' / ' . $ilayer . ' / ' . $inode . "\n";
-                            }
                             $inputnode_value = $this->nodeValue[$ilayer][$inode];
-                            $edge_weight = $this->edgeWeight[$ilayer][$inode]["{$layer}_{$node}"];
+                            $edge_weight = $this->edgeWeight[$ilayer][$inode][$str];
 
                             $node_value = $node_value + ($inputnode_value * $edge_weight);
                         }
