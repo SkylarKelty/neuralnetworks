@@ -22,12 +22,15 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/' . $networkstr
 		<title><?php echo $network->getTitle(); ?></title>
 		<link href='//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.css' rel='stylesheet' type='text/css'>
         <link href='//cdnjs.cloudflare.com/ajax/libs/chosen/1.6.2/chosen.min.css' rel='stylesheet' type='text/css'>
+        <link href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+        <link href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css' rel='stylesheet' type='text/css'>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.6.2/chosen.jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-		<div class='container'>
+		<div class='container-fluid'>
             <h1><?php echo $network->getTitle(); ?></h1>
             <form method="GET" action="index.php">
                 <select name="net">
@@ -39,6 +42,13 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/' . $networkstr
                     ?>
                 </select>
             </form>
+            <div id="info">
+                <?php
+                echo '<h3>' . $network->getTitle() . '</h3>';
+                echo '<p>' . $network->getDescription() . '</p>';
+                echo '<small>' . $network->getType() . ' (v' . $network->getVersion() . ')</small>';
+                ?>
+            </div>
             <div id="network"></div>
 		</div>
 

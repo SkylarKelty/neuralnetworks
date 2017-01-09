@@ -28,6 +28,22 @@ class NeuralNetwork
     }
 
     /**
+     * Get a type.
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Get a version.
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
      * Get a description.
      */
     public function getDescription()
