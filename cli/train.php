@@ -4,18 +4,23 @@
  */
 require_once(dirname(__FILE__) . '/../lib.php');
 
-$input = 2;
-$output = 1;
+$input = 20;
+$output = 20;
+
+function encodeNumber($num) {
+    $result = array_pad(array(), 20, 0);
+    $result[$num] = 1;
+    return $result;
+}
 
 $done = array();
 for ($i = 1; $i <= 12; $i++) {
-    $layer1 = $i; //rand(1, 6);
-    $layer2 = 0; //rand(0, 6);
-    $layer3 = 0; //rand(0, 6);
-    $k = "{$layer1}{$layer2}{$layer3}";
-    if (isset($done[$k])) {
-        continue;
-    }
+    do {
+        $layer1 = 1;
+        $layer2 = 0;// rand(0, 40);
+        $layer3 = 0;//rand(0, 40);
+        $k = "{$layer1}{$layer2}{$layer3}";
+    } while (isset($done[$k]));
     $done[$k] = true;
 
     // Create a Perceptron network.
@@ -26,28 +31,29 @@ for ($i = 1; $i <= 12; $i++) {
     } else {
         $n = new KeltyNN\Networks\FFMLPerceptron($input, $layer1, $output);
     }
-    $n->setTitle('AND logic gate');
-    $n->setDescription('Given two inputs, this will output 1 if both are 1 and -1 if both, or either, are 0.');
+    $n->setTitle('Digit Addition 0-9');
+    $n->setDescription('Returns the sum of two numbers.');
     $n->setVerbose(false);
 
     // Add test-data to the network.
-    $n->addTestData(array(1, 1), array(1));
-    $n->addTestData(array(0, 1), array(-1));
-    $n->addTestData(array(1, 0), array(-1));
-    $n->addTestData(array(0, 0), array(-1));
+    for ($i = 0; $i < 1000; $i++) {
+        $a = rand(0, 9);
+        $b = rand(0, 9);
+        $n->addTestData(array_merge(encodeNumber($a), encodeNumber($b)), encodeNumber($a + $b));
+    }
 
     // we try training the network for at most $max times
     $max = 10;
     $j = 0;
 
     // Train the network.
-    while (!($success = $n->train(1000, 0.001)) && ++$j < $max) {
+    while (!($success = $n->train(10000, 0.1)) && ++$j < $max) {
     }
 
     // print a message if the network was succesfully trained
     if ($success) {
         $epochs = $n->getEpoch();
-        $n->save(dirname(__FILE__) . '/../trained/maths/basic/and.nn');
+        $n->save(dirname(__FILE__) . '/../trained/maths/basic/addition.nn');
         echo "{$layer1} | {$layer2} | {$layer3}\n";
         echo "Success in $epochs training rounds!\n";
         exit(0);
