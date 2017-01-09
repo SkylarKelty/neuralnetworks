@@ -1,20 +1,46 @@
 <?php
 require_once(dirname(__FILE__) . '/lib.php');
 
-$network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/basic/flex_xor.nn');
+$validNets = array();
+$diriterator = new RecursiveDirectoryIterator("trained");
+$iterator = new RecursiveIteratorIterator($diriterator, RecursiveIteratorIterator::SELF_FIRST);
+foreach ($iterator as $file) {
+    if (strrpos($file, '.nn') == strlen($file) - 3) {
+        $validNets[] = $file;
+    }
+}
+
+$networkstr = 'trained/maths/basic/flex_xor.nn';
+if (isset($_GET['net']) && in_array($_GET['net'], $validNets)) {
+    $networkstr = $_GET['net'];
+}
+
+$network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/' . $networkstr);
 ?>
 <html>
 	<head>
 		<title><?php echo $network->getTitle(); ?></title>
 		<link href='//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.css' rel='stylesheet' type='text/css'>
+        <link href='//cdnjs.cloudflare.com/ajax/libs/chosen/1.6.2/chosen.min.css' rel='stylesheet' type='text/css'>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.6.2/chosen.jquery.min.js"></script>
 	</head>
 	<body>
 		<div class='container'>
             <h1><?php echo $network->getTitle(); ?></h1>
+            <form method="GET" action="index.php">
+                <select name="net">
+                    <?php
+                    foreach ($validNets as $validNet) {
+                        $selected = ($validNet == $networkstr) ? ' selected="selected"' : '';
+                        echo "<option value=\"{$validNet}\"{$selected}>{$validNet}</option>";
+                    }
+                    ?>
+                </select>
+            </form>
             <div id="network"></div>
 		</div>
-
-        <script src="//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
 
         <script type="text/javascript">
           // create an array with nodes
@@ -82,6 +108,10 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/b
                 configure: true
             };
           var network = new vis.Network(container, data, options);
+
+          $('select').chosen().change(function() {
+              $(this).parent().submit();
+          });
         </script>
 	</body>
 </html>
