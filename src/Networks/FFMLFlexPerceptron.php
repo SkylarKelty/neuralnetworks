@@ -7,6 +7,7 @@ namespace KeltyNN\Networks;
 
 class FFMLFlexPerceptron extends FFMLPerceptron
 {
+    protected $designed = false;
     protected $layerConnectors = array();
 
     /**
@@ -34,7 +35,7 @@ class FFMLFlexPerceptron extends FFMLPerceptron
         parent::__construct($nodeCount);
 
         $this->type = 'FFMLFlexPerceptron';
-        $this->version = '1.0';
+        $this->version = '1.1';
     }
 
     /**
@@ -45,6 +46,7 @@ class FFMLFlexPerceptron extends FFMLPerceptron
     public function export() {
         $store = parent::export();
         $store['layerConnectors'] = $this->layerConnectors;
+        $store['designed'] = $this->designed;
         return $store;
     }
 
@@ -74,6 +76,9 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                 if (isset($this->layerConnectors["{$layer}_{$node}"])) {
                     foreach ($this->layerConnectors["{$layer}_{$node}"] as $ilayer => $inodes) {
                         foreach ($inodes as $inode) {
+                            if (!isset($this->nodeValue[$ilayer]) || !isset($this->nodeValue[$ilayer][$inode])) {
+                                echo "{$layer}_{$node}" . ' / ' . $ilayer . ' / ' . $inode . "\n";
+                            }
                             $inputnode_value = $this->nodeValue[$ilayer][$inode];
                             $edge_weight = $this->edgeWeight[$ilayer][$inode]["{$layer}_{$node}"];
 
@@ -101,17 +106,28 @@ class FFMLFlexPerceptron extends FFMLPerceptron
      * Notify the layerConnectors array of a new connection.
      */
     protected function notifyConnection($layer, $node, $tolayer, $tonode) {
-        if (!isset($this->layerConnectors["{$layer}_{$node}"])) {
-            $this->layerConnectors["{$layer}_{$node}"] = array();
+        if (!isset($this->layerConnectors["{$tolayer}_{$tonode}"])) {
+            $this->layerConnectors["{$tolayer}_{$tonode}"] = array();
         }
 
-        if (!isset($this->layerConnectors["{$layer}_{$node}"][$tolayer])) {
-            $this->layerConnectors["{$layer}_{$node}"][$tolayer] = array();
+        if (!isset($this->layerConnectors["{$tolayer}_{$tonode}"][$layer])) {
+            $this->layerConnectors["{$tolayer}_{$tonode}"][$layer] = array();
         }
 
-        if (!in_array($tonode, $this->layerConnectors["{$layer}_{$node}"][$tolayer])) {
-            $this->layerConnectors["{$layer}_{$node}"][$tolayer][] = $tonode;
+        if (!in_array($node, $this->layerConnectors["{$tolayer}_{$tonode}"][$layer])) {
+            $this->layerConnectors["{$tolayer}_{$tonode}"][$layer][] = $node;
         }
+    }
+
+    /**
+     * Get all connections for this node.
+     */
+    protected function getConnectedNodes($layer, $node) {
+        if (isset($this->layerConnectors["{$layer}_{$node}"])) {
+            return $this->layerConnectors["{$layer}_{$node}"];
+        }
+
+        return array();
     }
 
     /**
@@ -130,15 +146,31 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                 // 3. randomise this node's threshold
                 $this->nodeThreshold[$layer][$node] = $this->getRandomWeight($layer);
 
-                // 4. this node is connected to each node of the previous layer
-                for ($prev_index = 0; $prev_index < $this->nodeCount[$prev_layer]; $prev_index++) {
+                // If we already have structure we dont just want to blindly link previous layers.
+                if (!$this->designed) {
+                    // 4. this node is connected to each node of the previous layer
+                    for ($prev_index = 0; $prev_index < $this->nodeCount[$prev_layer]; $prev_index++) {
 
-                    // 5. this is the 'edge' that needs to be reset / initialised
-                    $this->edgeWeight[$prev_layer][$prev_index]["{$layer}_{$node}"] = $this->getRandomWeight($prev_layer);
-                    $this->notifyConnection($prev_layer, $prev_index, $layer, $node);
+                        // 5. this is the 'edge' that needs to be reset / initialised
+                        $this->edgeWeight[$prev_layer][$prev_index]["{$layer}_{$node}"] = $this->getRandomWeight($prev_layer);
+                        $this->notifyConnection($prev_layer, $prev_index, $layer, $node);
 
-                    // 6. initialize the 'previous weightcorrection' at 0.0
-                    $this->previousWeightCorrection[$prev_layer][$prev_index] = 0.0;
+                        // 6. initialize the 'previous weightcorrection' at 0.0
+                        $this->previousWeightCorrection[$prev_layer][$prev_index] = 0.0;
+                    }
+                } else {
+                    // 5. This node is connected to random nodes.
+                    $connected = $this->getConnectedNodes($layer, $node);
+                    foreach ($connected as $ilayer => $inodes) {
+                        foreach ($inodes as $inode) {
+                            // This is the 'edge' that needs to be reset / initialised
+                            $this->edgeWeight[$ilayer][$inode]["{$layer}_{$node}"] = $this->getRandomWeight($ilayer);
+                            $this->notifyConnection($ilayer, $inode, $layer, $node);
+
+                            // Initialize the 'previous weightcorrection' at 0.0
+                            $this->previousWeightCorrection[$ilayer][$inode] = 0.0;
+                        }
+                    }
                 }
             }
         }
@@ -171,13 +203,10 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                 } else {
                     // for hidden layers:
                     // 1a. sum the product of edgeWeight and errorgradient of the 'next' layer
-                    $next_layer = $layer + 1;
-
                     $productsum = 0;
-                    for ($next_index = 0; $next_index < ($this->nodeCount[$next_layer]); $next_index++) {
+                    foreach ($this->edgeWeight[$layer][$node] as $next_ident => $_edgeWeight) {
+                        list($next_layer, $next_index) = explode('_', $next_ident);
                         $_errorgradient = $errorgradient[$next_layer][$next_index];
-                        $_edgeWeight = $this->edgeWeight[$layer][$node]["{$next_layer}_{$next_index}"];
-
                         $productsum = $productsum + $_errorgradient * $_edgeWeight;
                     }
 
@@ -190,27 +219,29 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                 $prev_layer = $layer - 1;
                 $learning_rate = $this->getlearningRate($prev_layer);
 
-                for ($prev_index = 0; $prev_index < ($this->nodeCount[$prev_layer]); $prev_index++) {
+                $connected = $this->getConnectedNodes($layer, $node);
+                foreach ($connected as $prev_layer => $prev_indexes) {
+                    foreach ($prev_indexes as $prev_index) {
+                        // 2a. obtain nodeValue, edgeWeight and learning rate
+                        $nodeValue = $this->nodeValue[$prev_layer][$prev_index];
+                        $edgeWeight = $this->edgeWeight[$prev_layer][$prev_index]["{$layer}_{$node}"];
 
-                    // 2a. obtain nodeValue, edgeWeight and learning rate
-                    $nodeValue = $this->nodeValue[$prev_layer][$prev_index];
-                    $edgeWeight = $this->edgeWeight[$prev_layer][$prev_index]["{$layer}_{$node}"];
+                        // 2b. calculate weight correction
+                        $weight_correction = $learning_rate * $nodeValue * $errorgradient[$layer][$node];
 
-                    // 2b. calculate weight correction
-                    $weight_correction = $learning_rate * $nodeValue * $errorgradient[$layer][$node];
+                        // 2c. retrieve previous weight correction
+                        $prev_weightcorrection = @$this->previousWeightCorrection[$layer][$node];
 
-                    // 2c. retrieve previous weight correction
-                    $prev_weightcorrection = @$this->previousWeightCorrection[$layer][$node];
+                        // 2d. combine those ('momentum learning') to a new weight
+                        $new_weight = $edgeWeight + $weight_correction + $momentum * $prev_weightcorrection;
 
-                    // 2d. combine those ('momentum learning') to a new weight
-                    $new_weight = $edgeWeight + $weight_correction + $momentum * $prev_weightcorrection;
+                        // 2e. assign the new weight to this edge
+                        $this->edgeWeight[$prev_layer][$prev_index]["{$layer}_{$node}"] = $new_weight;
+                        $this->notifyConnection($prev_layer, $prev_index, $layer, $node);
 
-                    // 2e. assign the new weight to this edge
-                    $this->edgeWeight[$prev_layer][$prev_index]["{$layer}_{$node}"] = $new_weight;
-                    $this->notifyConnection($prev_layer, $prev_index, $layer, $node);
-
-                    // 2f. remember this weightcorrection
-                    $this->previousWeightCorrection[$layer][$node] = $weight_correction;
+                        // 2f. remember this weightcorrection
+                        $this->previousWeightCorrection[$layer][$node] = $weight_correction;
+                    }
                 }
 
                 // step 3: use the errorgradient to determine threshold correction
