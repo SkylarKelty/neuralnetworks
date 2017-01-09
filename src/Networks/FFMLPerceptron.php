@@ -628,7 +628,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
      *
      * @return float A random weight
      */
-    private function getRandomWeight($layer)
+    protected function getRandomWeight($layer)
     {
         return ((mt_rand(0, 1000) / 1000) - 0.5) / 2;
     }

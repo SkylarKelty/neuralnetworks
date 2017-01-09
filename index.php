@@ -1,7 +1,7 @@
 <?php
 require_once(dirname(__FILE__) . '/lib.php');
 
-$network = KeltyNN\NeuralNetwork::load(dirname(__FILE__) . '/trained/maths/advanced/equals.nn');
+$network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/maths/advanced/equals.nn');
 ?>
 <html>
 	<head>
