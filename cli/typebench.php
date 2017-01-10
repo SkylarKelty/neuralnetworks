@@ -6,13 +6,13 @@ require_once(dirname(__FILE__) . '/../lib.php');
 
 //for ($hidden = 1; $hidden < 20; $hidden++) {
 foreach (array(
-    'KeltyNN\\Networks\\FFMLPerceptron',
-    'KeltyNN\\Networks\\FFMLRELUPerceptron',
-    'KeltyNN\\Networks\\FFMLLeakyRELUPerceptron',
-    'KeltyNN\\Networks\\FFMLLinearPerceptron',
+    //'KeltyNN\\Networks\\FFMLPerceptron',
+    //'KeltyNN\\Networks\\FFMLRELUPerceptron',
+    //'KeltyNN\\Networks\\FFMLLeakyRELUPerceptron',
+    //'KeltyNN\\Networks\\FFMLLinearPerceptron',
     'KeltyNN\\Networks\\FFMLHyperbolicPerceptron',
     'KeltyNN\\Networks\\FFMLSigPerceptron',
-    'KeltyNN\\Networks\\FFMLBentIdentPerceptron'
+    //'KeltyNN\\Networks\\FFMLBentIdentPerceptron'
 ) as $classname) {
     $time = microtime(True);
     // Create a Perceptron network.

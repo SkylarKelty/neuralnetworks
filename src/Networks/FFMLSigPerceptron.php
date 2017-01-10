@@ -34,7 +34,7 @@ class FFMLSigPerceptron extends FFMLPerceptron
         parent::__construct($nodeCount);
 
         $this->type = 'FFMLSigPerceptron';
-        $this->version = '1.1';
+        $this->version = '1.2';
     }
 
     /**
@@ -47,5 +47,22 @@ class FFMLSigPerceptron extends FFMLPerceptron
     protected function activation($value)
     {
         return 1.0 / (1.0 + exp(-$value));
+    }
+
+    /**
+     * Implements the derivative of the activation function. By default, this is the
+     * inverse of the 'tanh' activation function: 1.0 - tanh($value)*tanh($value);.
+     *
+     * @param float $value 'X'
+     *
+     * @return $float
+     */
+    protected function derivativeActivation($value)
+    {
+        if ($this->version < 1.2) {
+            return parent::derivativeActivation($value);
+        }
+
+        return exp(-$value) / pow(exp(-$value) + 1, 2);
     }
 }

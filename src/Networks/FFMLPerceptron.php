@@ -38,6 +38,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
     protected $layerCount = 0;
     protected $previousWeightCorrection = array();
     protected $momentum = 0.8;
+    protected $bias = 0;
     protected $isVerbose = false;
     protected $weightsInitialized = false;
 
@@ -128,6 +129,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
             'nodeThreshold'      => $this->nodeThreshold,
             'learningRate'       => $this->learningRate,
             'momentum'           => $this->momentum,
+            'bias'               => $this->bias,
             'isVerbose'          => $this->isVerbose,
             'weightsInitialized' => $this->weightsInitialized,
             'trainDataID'        => $this->trainDataID,
@@ -179,6 +181,23 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
         }
 
         return $this->learningRate[0];
+    }
+
+    /**
+     * Set the bias of the net.
+     * Only works for version 3.0+ nets.
+     */
+    public function setBias($bias)
+    {
+        $this->bias = $bias;
+    }
+
+    /**
+     * Return the bias of the net.
+     */
+    public function getBias()
+    {
+        return $this->bias;
     }
 
     /**
@@ -281,7 +300,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
     {
         switch ($this->version) {
             case '3.0':
-                return 1.7159 * tanh(0.666 * $value);
+                return 1.7159 * tanh(0.666 * $value + $this->bias);
             case '2.0':
                 return tanh($value) + $value; // Avoid flat spots.
             default:

@@ -34,7 +34,7 @@ class FFMLHyperbolicPerceptron extends FFMLPerceptron
         parent::__construct($nodeCount);
 
         $this->type = 'FFMLHyperbolicPerceptron';
-        $this->version = '1.1';
+        $this->version = '1.2';
     }
 
     /**
@@ -47,5 +47,22 @@ class FFMLHyperbolicPerceptron extends FFMLPerceptron
     protected function activation($value)
     {
         return (exp($value) - exp(-$value)) / (exp($value) + exp(-$value));
+    }
+
+    /**
+     * Implements the derivative of the activation function. By default, this is the
+     * inverse of the 'tanh' activation function: 1.0 - tanh($value)*tanh($value);.
+     *
+     * @param float $value 'X'
+     *
+     * @return $float
+     */
+    protected function derivativeActivation($value)
+    {
+        if ($this->version < 1.2) {
+            return parent::derivativeActivation($value);
+        }
+
+        return (4 * exp(2 * $value)) / pow(exp(2 * $value) + 1, 2);
     }
 }
