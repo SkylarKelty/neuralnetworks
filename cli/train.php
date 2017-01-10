@@ -9,6 +9,8 @@ $output = 1;
 
 $done = array();
 for ($i = 1; $i <= 12; $i++) {
+    $time = microtime(True);
+
     do {
         $layer1 = 1;
         $layer2 = 0;// rand(0, 40);
@@ -23,7 +25,7 @@ for ($i = 1; $i <= 12; $i++) {
     } elseif ($layer2) {
         $n = new KeltyNN\Networks\FFMLPerceptron($input, $layer1, $layer2, $output);
     } else {
-        $n = new KeltyNN\Networks\FFMLPerceptron($input, $layer1, $output);
+        $n = new KeltyNN\Networks\FFMLHyperbolicPerceptron($input, $layer1, $output);
     }
     $n->setTitle('OR Gate');
     $n->setDescription('Given two inputs, this will output 1 if either input is 1 else it will output -1.');
@@ -40,16 +42,20 @@ for ($i = 1; $i <= 12; $i++) {
     $j = 0;
 
     // Train the network.
-    while (!($success = $n->train(1000, 0.01)) && ++$j < $max) {
+    while (!($success = $n->train(1000, 0.1)) && ++$j < $max) {
     }
 
-    // print a message if the network was succesfully trained
+    // Print a message.
+    $epochs = $n->getEpoch();
+    $time = microtime(True) - $time;
     if ($success) {
-        $epochs = $n->getEpoch();
-        $n->save(dirname(__FILE__) . '/../trained/maths/basic/or.nn');
+        echo "Success in {$epochs} training rounds over {$j} attempts in {$time}s.\n";
         echo "{$layer1} | {$layer2} | {$layer3}\n";
-        echo "Success in $epochs training rounds!\n";
+
+        $n->save(dirname(__FILE__) . '/../trained/maths/basic/or_hyperbolic.nn');
         exit(0);
+    } else {
+        echo "Failed after {$epochs} training rounds over {$time}s.\n";
     }
 }
 
