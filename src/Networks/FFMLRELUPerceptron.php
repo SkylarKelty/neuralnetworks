@@ -44,7 +44,7 @@ class FFMLRELUPerceptron extends FFMLPerceptron
      *
      * @return float The final output of the node
      */
-    protected function activation($value)
+    public function activation($value)
     {
         return ($value >= 0) ? $value : 0;
     }
@@ -57,7 +57,7 @@ class FFMLRELUPerceptron extends FFMLPerceptron
      *
      * @return $float
      */
-    protected function derivativeActivation($value)
+    public function derivativeActivation($value)
     {
         return ($value >= 0) ?  1.0 : 0;
     }

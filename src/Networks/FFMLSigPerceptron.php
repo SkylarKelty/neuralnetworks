@@ -44,7 +44,7 @@ class FFMLSigPerceptron extends FFMLPerceptron
      *
      * @return float The final output of the node
      */
-    protected function activation($value)
+    public function activation($value)
     {
         return 1.0 / (1.0 + exp(-$value));
     }
@@ -57,7 +57,7 @@ class FFMLSigPerceptron extends FFMLPerceptron
      *
      * @return $float
      */
-    protected function derivativeActivation($value)
+    public function derivativeActivation($value)
     {
         if ($this->version < 1.2) {
             return parent::derivativeActivation($value);

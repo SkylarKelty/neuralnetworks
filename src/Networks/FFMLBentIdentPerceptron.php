@@ -44,7 +44,7 @@ class FFMLBentIdentPerceptron extends FFMLPerceptron
      *
      * @return float The final output of the node
      */
-    protected function activation($value)
+    public function activation($value)
     {
         return ((sqrt(($value * $value) + 1) - 1) / 2) + $value;
     }
@@ -57,7 +57,7 @@ class FFMLBentIdentPerceptron extends FFMLPerceptron
      *
      * @return $float
      */
-    protected function derivativeActivation($value)
+    public function derivativeActivation($value)
     {
         return ($value / pow(($value * $value) + 1, 0.5)) + 1;
     }

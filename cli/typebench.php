@@ -16,9 +16,9 @@ foreach (array(
 ) as $classname) {
     $time = microtime(True);
     // Create a Perceptron network.
-    $n = new $classname(1, 1, 1);
-    $n->setTitle('NegToNull function');
-    $n->setDescription('Given an input, will return 1 if above 0 or 0 if 0 or below.');
+    $n = new $classname(1, 8, 2, 6, 2, 2, 1);
+    $n->setTitle('Equals function');
+    $n->setDescription('Given two inputs, returns 1 if they are equal.');
     $n->setVerbose(false);
 
     // Add test-data to the network.

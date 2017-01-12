@@ -296,7 +296,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
      *
      * @return float The final output of the node
      */
-    protected function activation($value)
+    public function activation($value)
     {
         switch ($this->version) {
             case '3.0':
@@ -316,7 +316,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
      *
      * @return $float
      */
-    protected function derivativeActivation($value)
+    public function derivativeActivation($value)
     {
         $tanh = tanh($value);
 
