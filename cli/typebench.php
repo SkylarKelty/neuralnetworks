@@ -4,7 +4,7 @@
  */
 require_once(dirname(__FILE__) . '/../lib.php');
 
-//for ($hidden = 1; $hidden < 20; $hidden++) {
+for ($hidden = 3; $hidden < 20; $hidden++) {
 foreach (array(
     'KeltyNN\\Networks\\FFMLPerceptron',
     'KeltyNN\\Networks\\FFMLRELUPerceptron',
@@ -16,15 +16,16 @@ foreach (array(
 ) as $classname) {
     $time = microtime(True);
     // Create a Perceptron network.
-    $n = new $classname(1, 8, 2, 6, 2, 2, 1);
+    $n = new $classname(2, $hidden, 1);
     $n->setTitle('Equals function');
-    $n->setDescription('Given two inputs, returns 1 if they are equal.');
+    $n->setDescription('Given two positive inputs, returns 1 if they are equal.');
     $n->setVerbose(false);
 
     // Add test-data to the network.
-    for ($i = 0; $i < 10000; $i++) {
-        $a = rand(-10000, 10000);
-        $n->addTestData(array($a), array($a > 0 ? 1 : 0));
+    for ($i = 0; $i < 10; $i++) {
+        $n->addTestData(array(((float)"0.$i"), ((float)"0.$i")), array(1));
+        $n->addTestData(array(((float)"0.$i"), ((float)"0.$i") + 0.1), array(0));
+        $n->addTestData(array(((float)"0.$i"), ((float)"0.$i") - 0.1), array(0));
         //$n->addTestData(array($i, $i + rand(1, 3000)), array(0));
         //if ($i >= 2) {
         //    $n->addTestData(array($i, $i / 2), array(0));
@@ -40,7 +41,7 @@ foreach (array(
     $j = 0;
 
     // Train the network.
-    while (!($success = $n->train(10000, 0.01)) && ++$j < $max) {
+    while (!($success = $n->train(2000, 0.1)) && ++$j < $max) {
     }
 
     $epochs = $n->getEpoch();
@@ -48,10 +49,10 @@ foreach (array(
     if ($success) {
         echo "{$classname} - Success in {$epochs} training rounds over {$j} attempts in {$time}s.\n";
 
-        $n->save(dirname(__FILE__) . '/../trained/maths/basic/negtonull_optimised.nn');
+        $n->save(dirname(__FILE__) . '/../trained/maths/advanced/eq_pos.nn');
         exit(0);
     } else {
         echo "{$classname} - failed after {$epochs} training rounds over {$time}s.\n";
     }
 }
-//}
+}

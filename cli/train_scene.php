@@ -17,6 +17,8 @@
  * infer that there could be in this setting.
  * Essentially I want the car neural path to semi-activate
  * the skyscraper and bus stop paths.
+ *
+ * This would likely be best served by a Hopfield net or similar.
  */
 
 require_once(dirname(__FILE__) . '/../lib.php');

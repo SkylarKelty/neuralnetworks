@@ -17,6 +17,7 @@ if (isset($_GET['net']) && in_array($_GET['net'], $validNets)) {
 
 $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/' . $networkstr);
 ?>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title><?php echo $network->getTitle(); ?></title>
