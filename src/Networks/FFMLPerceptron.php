@@ -318,9 +318,7 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
      */
     public function derivativeActivation($value)
     {
-        $tanh = tanh($value);
-
-        return 1.0 - $tanh * $tanh;
+        return 1.14393 * (1 - pow(tanh(0.666 * $value), 2));
     }
 
     /**
