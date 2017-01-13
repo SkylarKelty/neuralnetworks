@@ -39,6 +39,44 @@ class FFMLFlexPerceptron extends FFMLPerceptron
     }
 
     /**
+     * Enable designer mode.
+     */
+    public function setDesignerMode() {
+        $this->designed = true;
+    }
+
+    /**
+     * Create a blank node with a random, or given weight.
+     */
+    public function addNode($layer, $weight = false) {
+        if ($weight == false) {
+            $weight = $this->getRandomWeight($weight);
+        }
+
+        if (!isset($this->nodeThreshold[$layer])) {
+            $layer = count($this->nodeCount) - 1;
+            $this->nodeThreshold[$layer + 1] = $this->nodeThreshold[$layer];
+            $this->nodeCount[$layer + 1] = $this->nodeCount[$layer];
+            $this->nodeThreshold[$layer] = array();
+            $this->nodeCount[$layer] = 1;
+            $this->layerCount++;
+        } else {
+            $this->nodeCount[$layer]++;
+        }
+
+        $this->nodeThreshold[$layer][] = $weight;
+        return count($this->nodeThreshold[$layer]) - 1;
+    }
+
+    /**
+     * Connect two nodes together.
+     */
+    public function connect($layer, $node, $tolayer, $tonode) {
+        $this->edgeWeight[$layer][$node]["{$tolayer}_{$tonode}"] = $this->getRandomWeight($layer);
+        $this->notifyConnection($layer, $node, $tolayer, $tonode);
+    }
+
+    /**
      * Upgrade a standard perceptron to a flex perceptron.
      */
     public static function upgrade($data) {

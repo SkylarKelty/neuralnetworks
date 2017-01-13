@@ -34,7 +34,17 @@ class Snake
      * 0 - up, 1 - down, 2 - left, 3 - right
      */
     public function changeDirection($direction) {
+        if (($this->direction == 0 || $this->direction == 1) && ($direction == 0 || $direction == 1) && $this->direction != $direction) {
+            return false;
+        }
+
+        if (($this->direction == 2 || $this->direction == 3) && ($direction == 2 || $direction == 3) && $this->direction != $direction) {
+            return false;
+        }
+
         $this->direction = $direction;
+
+        return true;
     }
 
     /**
@@ -67,7 +77,10 @@ class Snake
         if ($this->clamp($current[0], $current[1])) {
             $this->snakepos[] = $current;
             array_shift($this->snakepos);
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -119,7 +132,9 @@ class Snake
      * Game tick.
      */
     public function tick() {
-        $this->moveSnake();
+        if ($this->moveSnake()) {
+            $this->turns++;
+        }
 
         if ($this->collision($this->applepos)) {
             $this->spawnApple();
@@ -130,14 +145,16 @@ class Snake
                 $this->growSnake();
             }
         }
-
-        $this->turns++;
     }
 
     /**
      * What is at these coordinates?
      */
     public function whatsat($x, $y) {
+        if (!$this->clamp($x, $y)) {
+            return 'Bounds';
+        }
+
         if ($this->collision(array($x, $y))) {
             return 'Snake';
         }
@@ -147,6 +164,35 @@ class Snake
         }
 
         return 'Nothing';
+    }
+
+    /**
+     * Return the board around the snake as a normalized output.
+     */
+    public function exportSnakeSpace($width, $height, $exportBlank = true) {
+        $current = reset($this->snakepos);
+        $minx = $current[0] - ($width / 2);
+        $maxx = $current[0] + ($width / 2);
+        $miny = $current[1] - ($height / 2);
+        $maxy = $current[1] + ($height / 2);
+
+        $board = array();
+        for ($x = $minx; $x < $maxx; $x++) {
+            $board[$x] = array();
+            for ($y = $miny; $y < $maxy; $y++) {
+                $whatat = $this->whatsat($x, $y);
+                if ($whatat == 'Apple') {
+                    $board[$x][$y] = 1;
+                } else if ($whatat == 'Snake') {
+                    $board[$x][$y] = -1;
+                } else if ($whatat == 'Bounds') {
+                    $board[$x][$y] = -1;
+                } if ($exportBlank) {
+                    $board[$x][$y] = 0;
+                }
+            }
+        }
+        return $board;
     }
 
     /**

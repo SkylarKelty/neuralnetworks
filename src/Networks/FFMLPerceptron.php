@@ -112,6 +112,16 @@ class FFMLPerceptron extends \KeltyNN\NeuralNetwork
     }
 
     /**
+     * Return an identical clone.
+     */
+    public function clone() {
+        $net = new static($this->nodeCount);
+        $data = $this->export();
+        $net->import($data);
+        return $net;
+    }
+
+    /**
      * Exports the neural network.
      *
      * @returns array

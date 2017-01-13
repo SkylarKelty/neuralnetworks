@@ -1,10 +1,36 @@
 <?php
 require_once(dirname(__FILE__) . '/lib.php');
 
-$gamespace = new \KeltyNN\Input\Snake(50, 50);
+$network = new KeltyNN\Networks\FFMLFlexPerceptron(196, 0, 4);
+$network->setDesignerMode();
+$trainer = new KeltyNN\Trainers\Genetic($network);
 
+// Train a network for this game.
+$trainer->run(function($ontick) {
+    $gamespace = new \KeltyNN\Input\Snake(50, 50);
+    for ($i = 0; $i < 1000; $i++) {
+        $ontick($gamespace->exportSnakeSpace(14, 14));
+        $gamespace->tick();
+    }
+
+    return $gamespace->turns + ($gamespace->score * 2);
+});
+
+// Grab the best result.
+$network = $trainer->bestNetwork();
+
+// Run through the chosen network and record its progress.
+$gamespace = new \KeltyNN\Input\Snake(50, 50);
 $stages = array($gamespace->exportNormal(false));
-for ($i = 0; $i < 100; $i++) {
+for ($i = 0; $i < 1000; $i++) {
+    // Get the network to calculate the next move.
+    $moves = $network->calculate($gamespace->exportSnakeSpace(14, 14));
+    foreach ($moves as $direction => $value) {
+        if ($value && $gamespace->changeDirection($direction)) {
+            break;
+        }
+    }
+
     $gamespace->tick();
     $stages[] = $gamespace->exportNormal(false);
 }
@@ -18,6 +44,7 @@ for ($i = 0; $i < 100; $i++) {
         <link href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
+        <p><?php echo "Best score: " . ($gamespace->turns + ($gamespace->score * 2)); ?></p>
         <canvas id="snakepit" width="500" height="500" style="border: 1px solid black;"></canvas>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
