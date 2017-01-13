@@ -1,7 +1,7 @@
 <?php
 require_once(dirname(__FILE__) . '/lib.php');
 
-$network = new KeltyNN\Networks\FFMLFlexPerceptron(196, 0, 4);
+$network = new KeltyNN\Networks\FFMLFlexPerceptron(16, 0, 4);
 $network->setDesignerMode();
 $trainer = new KeltyNN\Trainers\Genetic($network);
 
@@ -9,7 +9,14 @@ $trainer = new KeltyNN\Trainers\Genetic($network);
 $trainer->run(function($ontick) {
     $gamespace = new \KeltyNN\Input\Snake(50, 50);
     for ($i = 0; $i < 1000; $i++) {
-        $ontick($gamespace->exportSnakeSpace(14, 14));
+        // Get the network to calculate the next move.
+        $moves = $ontick($gamespace->exportSnakeSpace(4, 4));
+        foreach ($moves as $direction => $value) {
+            if ($value > 0 && $gamespace->changeDirection($direction)) {
+                break;
+            }
+        }
+
         $gamespace->tick();
     }
 
@@ -24,9 +31,9 @@ $gamespace = new \KeltyNN\Input\Snake(50, 50);
 $stages = array($gamespace->exportNormal(false));
 for ($i = 0; $i < 1000; $i++) {
     // Get the network to calculate the next move.
-    $moves = $network->calculate($gamespace->exportSnakeSpace(14, 14));
+    $moves = $network->calculate($gamespace->exportSnakeSpace(4, 4));
     foreach ($moves as $direction => $value) {
-        if ($value && $gamespace->changeDirection($direction)) {
+        if ($value > 0 && $gamespace->changeDirection($direction)) {
             break;
         }
     }

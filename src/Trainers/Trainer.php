@@ -4,6 +4,6 @@ namespace KeltyNN\Trainers;
 
 interface Trainer
 {
-    function run($ontick);
+    function run($scorefunc);
     function bestNetwork();
 }

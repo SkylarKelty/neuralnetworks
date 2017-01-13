@@ -53,7 +53,7 @@ class FFMLFlexPerceptron extends FFMLPerceptron
             $weight = $this->getRandomWeight($weight);
         }
 
-        if (!isset($this->nodeThreshold[$layer])) {
+        if ($layer == count($this->nodeThreshold) - 1) {
             $layer = count($this->nodeCount) - 1;
             $this->nodeThreshold[$layer + 1] = $this->nodeThreshold[$layer];
             $this->nodeCount[$layer + 1] = $this->nodeCount[$layer];
@@ -71,9 +71,84 @@ class FFMLFlexPerceptron extends FFMLPerceptron
     /**
      * Connect two nodes together.
      */
-    public function connect($layer, $node, $tolayer, $tonode) {
-        $this->edgeWeight[$layer][$node]["{$tolayer}_{$tonode}"] = $this->getRandomWeight($layer);
+    public function connect($layer, $node, $tolayer, $tonode, $weight = false) {
+        if ($weight == false) {
+            $weight = $this->getRandomWeight($weight);
+        }
+
+        if (!isset($this->edgeWeight[$layer])) {
+            $this->edgeWeight[$layer] = array();
+        }
+
+        if (!isset($this->edgeWeight[$layer][$node])) {
+            $this->edgeWeight[$layer][$node] = array();
+        }
+
+        $this->edgeWeight[$layer][$node]["{$tolayer}_{$tonode}"] = $weight;
         $this->notifyConnection($layer, $node, $tolayer, $tonode);
+    }
+
+    /**
+     * Return a random node in this network.
+     */
+    public function getRandomNode($layers) {
+        $found = false;
+        foreach ($layers as $layer) {
+            if (isset($this->nodeCount[$layer])) {
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            return null;
+        }
+
+        do {
+            $layer = array_rand($this->nodeCount);
+        } while (!empty($layers) && !in_array($layer, $layers));
+        $node = rand(0, $this->nodeCount[$layer] - 1);
+        $weight = 0;
+        if (isset($this->nodeValue[$layer][$node])) {
+            $weight = $this->nodeValue[$layer][$node];
+        }
+
+        return array(
+            'layer' => $layer,
+            'node' => $node,
+            'weight' => $weight
+        );
+    }
+
+    /**
+     * Return a random edge in this network.
+     */
+    public function getRandomEdge($fromlayers) {
+        $layer = array_rand($this->edgeWeight);
+        $node = array_rand($this->edgeWeight[$layer]);
+        $to = array_rand($this->edgeWeight[$layer][$node]);
+        $weight = $this->edgeWeight[$layer][$node][$to];
+
+        return array(
+            'layer' => $layer,
+            'node' => $node,
+            'to' => $to,
+            'weight' => $weight
+        );
+    }
+
+    /**
+     * Set the weight of a node.
+     */
+    public function setNodeWeight($layer, $node, $weight) {
+        $this->nodeValue[$layer][$node] = $weight;
+    }
+
+    /**
+     * Set the weight of an edge.
+     */
+    public function setEdgeWeight($layer, $node, $to, $weight) {
+        $this->edgeWeight[$layer][$node][$to] = $weight;
     }
 
     /**
@@ -162,6 +237,11 @@ class FFMLFlexPerceptron extends FFMLPerceptron
                 }
 
                 // apply the threshold
+                if (!isset($this->nodeThreshold[$layer]) || !isset($this->nodeThreshold[$layer][$node])) {
+                    echo $layer . ' / ' . $node;
+                    print_r($this->nodeThreshold);
+                    die();
+                }
                 $node_value = $node_value - $this->nodeThreshold[$layer][$node];
 
                 // apply the activation function

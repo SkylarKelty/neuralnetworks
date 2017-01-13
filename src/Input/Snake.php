@@ -101,7 +101,7 @@ class Snake
      */
     public function spawnApple() {
         do {
-            $this->applepos = array(rand(0, $width), rand(0, $height));
+            $this->applepos = array(rand(0, $this->width), rand(0, $this->height));
         } while($this->collision($this->applepos));
     }
 
