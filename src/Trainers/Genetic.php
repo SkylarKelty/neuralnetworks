@@ -116,7 +116,7 @@ class Genetic implements Trainer
             });
             $species[] = array('network' => $network, 'score' => $score);
         }
-        $this->species[] = $species;
+        $this->species = $species;
 
         return $species;
     }
@@ -147,12 +147,11 @@ class Genetic implements Trainer
                 continue;
             }
 
+            // Select the best species from the previous generation and create a new species from them.
+            $top = $this->selectFromSpecies($prevspecies);
             for ($j = 0; $j < self::MAX_SPECIES; $j++) {
-                // TODO - only the best from previous generation.
-                $top = $this->selectFromSpecies($prevspecies[array_rand($prevspecies)]);
-                foreach ($top as $organism) {
-                    $this->createSpecies($organism['network'], $scorefunc);
-                }
+                $organism = $top[array_rand($top)];
+                $this->createSpecies($organism['network'], $scorefunc);
             }
 
             // Right. Choose the best of this generation.
@@ -163,9 +162,6 @@ class Genetic implements Trainer
                     $this->bestnet = $organism['network'];
                 }
             }
-
-            // TODO - select the best species and cull the rest, spawn new species from those best.
-            //break;
         }
     }
 
