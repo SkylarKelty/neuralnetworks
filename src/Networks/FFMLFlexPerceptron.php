@@ -8,7 +8,7 @@ namespace KeltyNN\Networks;
 class FFMLFlexPerceptron extends FFMLPerceptron
 {
     protected $designed = false;
-    protected $layerConnectors = array();
+    public $layerConnectors = array();
 
     /**
      * Creates a neural network.
@@ -92,21 +92,25 @@ class FFMLFlexPerceptron extends FFMLPerceptron
      * Return a random node in this network.
      */
     public function getRandomNode($layers) {
-        $found = false;
+        if (empty($layers)) {
+            return null;
+        }
+
+        // Make sure we can find a valid node.
+        $valid = array();
         foreach ($layers as $layer) {
-            if (isset($this->nodeCount[$layer])) {
-                $found = true;
+            if (isset($this->nodeCount[$layer]) && $this->nodeCount[$layer] > 0) {
+                $valid[$layer] = $layer;
                 break;
             }
         }
 
-        if (!$found) {
+        if (empty($valid)) {
             return null;
         }
 
-        do {
-            $layer = array_rand($this->nodeCount);
-        } while (!empty($layers) && !in_array($layer, $layers));
+        // Get a random node.
+        $layer = array_rand($valid);
         $node = rand(0, $this->nodeCount[$layer] - 1);
         $weight = 0;
         if (isset($this->nodeValue[$layer][$node])) {
@@ -222,12 +226,18 @@ class FFMLFlexPerceptron extends FFMLPerceptron
             for ($node = 0; $node < ($this->nodeCount[$layer]); $node++) {
                 $node_value = 0.0;
 
-                // Any node in the any layer might have a connection to this node
+                // Any node in any layer might have a connection to this node
                 // on basis of this, calculate this node's value
                 $str = "{$layer}_{$node}";
                 if (isset($this->layerConnectors[$str])) {
                     foreach ($this->layerConnectors[$str] as $ilayer => $inodes) {
                         foreach ($inodes as $inode) {
+                            if (!isset($this->nodeValue[$ilayer]) || !isset($this->nodeValue[$ilayer][$inode])) {
+                                print_r($this->layerConnectors);
+                                print_r($this->nodeCount);
+                                echo $ilayer . ' / ' . $inode . ' / ' . $this->layerCount . ' / '. $this->nodeCount[$layer];
+                                die();
+                            }
                             $inputnode_value = $this->nodeValue[$ilayer][$inode];
                             $edge_weight = $this->edgeWeight[$ilayer][$inode][$str];
 

@@ -30,7 +30,7 @@ namespace KeltyNN\Networks;
 
 class FFMLPerceptron extends \KeltyNN\NeuralNetwork
 {
-    protected $nodeCount = array();
+    public $nodeCount = array();
     protected $nodeValue = array();
     public $nodeThreshold = array();
     public $edgeWeight = array();

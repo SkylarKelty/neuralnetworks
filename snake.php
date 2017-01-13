@@ -9,8 +9,17 @@ $trainer = new KeltyNN\Trainers\Genetic($network);
 $trainer->run(function($ontick) {
     $gamespace = new \KeltyNN\Input\Snake(50, 50);
     for ($i = 0; $i < 1000; $i++) {
+        // Get the space around the head.
+        $space = $gamespace->exportSnakeSpace(4, 4);
+        // Translate to flattened array.
+        $arr = array();
+        foreach ($space as $x => $y) {
+            foreach ($y as $val) {
+                $arr[] = $val;
+            }
+        }
         // Get the network to calculate the next move.
-        $moves = $ontick($gamespace->exportSnakeSpace(4, 4));
+        $moves = $ontick($arr);
         foreach ($moves as $direction => $value) {
             if ($value > 0 && $gamespace->changeDirection($direction)) {
                 break;
@@ -30,6 +39,15 @@ $network = $trainer->bestNetwork();
 $gamespace = new \KeltyNN\Input\Snake(50, 50);
 $stages = array($gamespace->exportNormal(false));
 for ($i = 0; $i < 1000; $i++) {
+    // Get the space around the head.
+    $space = $gamespace->exportSnakeSpace(4, 4);
+    // Translate to flattened array.
+    $arr = array();
+    foreach ($space as $x => $y) {
+        foreach ($y as $val) {
+            $arr[] = $val;
+        }
+    }
     // Get the network to calculate the next move.
     $moves = $network->calculate($gamespace->exportSnakeSpace(4, 4));
     foreach ($moves as $direction => $value) {
