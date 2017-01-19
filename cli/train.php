@@ -4,7 +4,7 @@
  */
 require_once(dirname(__FILE__) . '/../lib.php');
 
-$input = 6;
+$input = 2;
 $output = 4;
 
 $done = array();
@@ -34,52 +34,22 @@ for ($i = 4; $i <= 12; $i++) {
     // Add test-data to the network.
     // x, y in. 1 means right or up, -1 means down or left
     // In: current up/down/left/right/xdelta/ydelta, Out: up down left right
-    $n->addTestData(array(0, 0, 0, 0, 0, 0), array(0, 0, 0, 0));
-    $n->addTestData(array(0, 0, 0, 0, 1, 0), array(0, 0, 0, 1));
-    $n->addTestData(array(0, 0, 0, 0, 0, 1), array(1, 0, 0, 0));
-    $n->addTestData(array(0, 0, 0, 0, 1, 1), array(1, 0, 0, 1));
-    $n->addTestData(array(0, 0, 0, 0, -1, 0), array(0, 0, 1, 0));
-    $n->addTestData(array(0, 0, 0, 0, 0, -1), array(0, 1, 0, 0));
-    $n->addTestData(array(0, 0, 0, 0, -1, -1), array(0, 1, 1, 0));
-
-    $n->addTestData(array(1, 0, 0, 0, 0, 0), array(0, 0, 0, 0));
-    $n->addTestData(array(1, 0, 0, 0, 1, 0), array(0, 0, 0, 1));
-    $n->addTestData(array(1, 0, 0, 0, 0, 1), array(1, 0, 0, 0));
-    $n->addTestData(array(1, 0, 0, 0, 1, 1), array(1, 0, 0, 1));
-    $n->addTestData(array(1, 0, 0, 0, -1, 0), array(0, 0, 1, 0));
-    $n->addTestData(array(1, 0, 0, 0, 0, -1), array(0, 0, 1, 1));
-    $n->addTestData(array(1, 0, 0, 0, -1, -1), array(0, 0, 1, 0));
-
-    $n->addTestData(array(0, 1, 0, 0, 0, 0), array(0, 0, 0, 0));
-    $n->addTestData(array(0, 1, 0, 0, 1, 0), array(0, 0, 0, 1));
-    $n->addTestData(array(0, 1, 0, 0, 0, 1), array(0, 0, 1, 1));
-    $n->addTestData(array(0, 1, 0, 0, 1, 1), array(0, 0, 0, 1));
-    $n->addTestData(array(0, 1, 0, 0, -1, 0), array(0, 0, 1, 0));
-    $n->addTestData(array(0, 1, 0, 0, 0, -1), array(0, 1, 0, 0));
-    $n->addTestData(array(0, 1, 0, 0, -1, -1), array(0, 1, 1, 0));
-
-    $n->addTestData(array(0, 0, 1, 0, 0, 0), array(0, 0, 0, 0));
-    $n->addTestData(array(0, 0, 1, 0, 1, 0), array(1, 1, 0, 0));
-    $n->addTestData(array(0, 0, 1, 0, 0, 1), array(1, 0, 0, 0));
-    $n->addTestData(array(0, 0, 1, 0, 1, 1), array(1, 0, 0, 0));
-    $n->addTestData(array(0, 0, 1, 0, -1, 0), array(0, 0, 1, 0));
-    $n->addTestData(array(0, 0, 1, 0, 0, -1), array(0, 1, 0, 0));
-    $n->addTestData(array(0, 0, 1, 0, -1, -1), array(0, 1, 1, 0));
-
-    $n->addTestData(array(0, 0, 0, 1, 0, 0), array(0, 0, 0, 0));
-    $n->addTestData(array(0, 0, 0, 1, 1, 0), array(0, 0, 0, 1));
-    $n->addTestData(array(0, 0, 0, 1, 0, 1), array(1, 0, 0, 0));
-    $n->addTestData(array(0, 0, 0, 1, 1, 1), array(1, 0, 0, 1));
-    $n->addTestData(array(0, 0, 0, 1, -1, 0), array(1, 1, 0, 0));
-    $n->addTestData(array(0, 0, 0, 1, 0, -1), array(0, 1, 0, 0));
-    $n->addTestData(array(0, 0, 0, 1, -1, -1), array(0, 1, 0, 0));
+    $n->addTestData(array(0, 0), array(0, 0, 0, 0));
+    $n->addTestData(array(1, 0), array(0, 0, 0, 1));
+    $n->addTestData(array(0, 1), array(1, 0, 0, 0));
+    $n->addTestData(array(1, 1), array(1, 0, 0, 1));
+    $n->addTestData(array(-1, 0), array(0, 0, 1, 0));
+    $n->addTestData(array(0, -1), array(0, 1, 0, 0));
+    $n->addTestData(array(-1, -1), array(0, 1, 1, 0));
+    $n->addTestData(array(1, -1), array(0, 1, 0, 1));
+    $n->addTestData(array(-1, 1), array(1, 0, 1, 0));
 
     // we try training the network for at most $max times
     $max = 10;
     $j = 0;
 
     // Train the network.
-    while (!($success = $n->train(1000, 0.01)) && ++$j < $max) {
+    while (!($success = $n->train(10000, 0.01)) && ++$j < $max) {
     }
 
     // Print a message.

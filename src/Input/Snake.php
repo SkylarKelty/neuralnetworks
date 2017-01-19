@@ -4,6 +4,8 @@ namespace KeltyNN\Input;
 
 class Snake
 {
+    public $logs = array();
+    public $tick = 0;
     public $turns = 0;
     public $score = 0;
     protected $width;
@@ -35,11 +37,19 @@ class Snake
      */
     public function changeDirection($direction) {
         if (($this->direction == 0 || $this->direction == 1) && ($direction == 0 || $direction == 1) && $this->direction != $direction) {
+            $this->log("Refused direction {$direction}");
             return false;
         }
 
         if (($this->direction == 2 || $this->direction == 3) && ($direction == 2 || $direction == 3) && $this->direction != $direction) {
+            $this->log("Refused direction {$direction}");
             return false;
+        }
+
+        if ($direction !== $this->direction) {
+            $this->log("Changing to {$direction}");
+        } else {
+            $this->log("Resuming direction {$direction}");
         }
 
         $this->direction = $direction;
@@ -49,14 +59,22 @@ class Snake
 
     /**
      * Returns normalised simple x/y vectors for moving to the apple.
+     * x, y in. 1 means right or up, -1 means down or left
      */
     public function scoreVectors() {
         $xa = $this->applepos[0];
         $ya = $this->applepos[1];
-        $xb = $this->snakepos[0][0];
-        $yb = $this->snakepos[0][1];
+        $current = end($this->snakepos);
+        $xb = $current[0];
+        $yb = $current[1];
 
-        return array($xa == $xb ? 0 : ($xa < $xb ? 1 : -1), $ya == $yb ? 0 : ($ya > $yb ? 1 : -1));
+        $this->log("Apple is at $xa, $ya");
+        $this->log("Snake head is at $xb, $yb");
+
+        return array(
+            $xa == $xb ? 0 : ($xa > $xb ? 1 : -1),
+            $ya == $yb ? 0 : ($ya < $yb ? 1 : -1)
+        );
     }
 
     /**
@@ -68,15 +86,16 @@ class Snake
 
     /**
      * Move snek.
+     * 0 - up, 1 - down, 2 - left, 3 - right
      */
     protected function moveSnake() {
         $current = end($this->snakepos);
         switch ($this->direction) {
             case 0:
-                $current[1]++;
+                $current[1]--;
             break;
             case 1:
-                $current[1]--;
+                $current[1]++;
             break;
             case 2:
                 $current[0]--;
@@ -114,6 +133,7 @@ class Snake
     public function spawnApple() {
         do {
             $this->applepos = array(rand(0, $this->width), rand(0, $this->height));
+            $this->log("Spawing new apple at {$this->applepos[0]}, {$this->applepos[1]}");
         } while($this->collision($this->applepos));
     }
 
@@ -141,9 +161,19 @@ class Snake
     }
 
     /**
+     * Submit an entry to the log.
+     */
+    public function log($message) {
+        $this->logs[$this->tick][] = $message;
+    }
+
+    /**
      * Game tick.
      */
     public function tick() {
+        $this->tick++;
+        $this->logs[$this->tick] = array();
+
         if ($this->moveSnake()) {
             $this->turns++;
         }

@@ -40,7 +40,7 @@ $network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/game/sn
 // Run through the chosen network and record its progress.
 $gamespace = new \KeltyNN\Input\Snake(50, 50);
 $stages = array($gamespace->exportNormal(false));
-for ($i = 0; $i < 1000; $i++) {
+for ($i = 0; $i < 25; $i++) {
     // Get the space around the head.
     /*$space = $gamespace->exportSnakeSpace(4, 4);
     // Translate to flattened array.
@@ -53,12 +53,17 @@ for ($i = 0; $i < 1000; $i++) {
     // Get the network to calculate the next move.
     $moves = $network->calculate($arr);
     */
+    $scorevectors = $gamespace->scoreVectors();
+    $gamespace->log('Vectors: ' . implode(', ', $scorevectors));
 
-    $moves = $network->calculate($gamespace->scoreVectors());
+    $moves = $network->calculate($scorevectors);
     arsort($moves);
-    $direction = reset($moves);
-    if ($direction > 0.5) {
-        $gamespace->changeDirection($direction);
+    $gamespace->log('Moves: ' . print_r($moves, true));
+
+    foreach ($moves as $move => $weight) {
+        if ($weight > 0.5 && $gamespace->changeDirection($move)) {
+            break;
+        }
     }
 
     $gamespace->tick();
@@ -74,8 +79,25 @@ for ($i = 0; $i < 1000; $i++) {
         <link href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
-        <p><?php echo "Best score: " . ($gamespace->turns + ($gamespace->score * 2)); ?></p>
-        <canvas id="snakepit" width="500" height="500" style="border: 1px solid black;"></canvas>
+        <div class="row">
+            <div class="col-sm-8">
+                <p><?php echo "Best score: " . ($gamespace->turns + ($gamespace->score * 2)); ?></p>
+                <canvas id="snakepit" width="500" height="500" style="border: 1px solid black;"></canvas><br />
+                <button id="previous" class="btn btn-primary">&lt;</button>
+                <button id="next" class="btn btn-primary">&gt;</button>
+            </div>
+            <div class="col-sm-4">
+                <?php
+                foreach ($gamespace->logs as $tick => $logs) {
+                    if (!empty($logs)) {
+                        echo "<div id=\"log{$tick}\" class=\"hidden log\">";
+                        echo implode("<br />", $logs);
+                        echo "</div>";
+                    }
+                }
+                ?>
+            </div>
+        </div>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
@@ -95,6 +117,7 @@ for ($i = 0; $i < 1000; $i++) {
         var ctx = canvas.getContext("2d");
 
         <?php
+        echo 'var maxstep = ' . (count($stages) - 1) . ';';
         foreach ($stages as $stage => $points) {
             echo "function step{$stage}() {";
             echo 'ctx.fillStyle = "white";';
@@ -112,16 +135,35 @@ for ($i = 0; $i < 1000; $i++) {
                     }
                 }
             }
+            echo '$(".log").addClass("hidden");';
+            echo '$("#log' . $stage . '").removeClass("hidden");';
             echo "}\n";
         }
         ?>
 
         step0();
-        var step = 1;
-        setInterval(function() {
-            runFunction('step' + step, []);
-            step++;
+        window.globalstep = 1;
+        window.stepper = setInterval(function() {
+            runFunction('step' + window.globalstep, []);
+            window.globalstep++;
+
+            if (window.globalstep > maxstep) {
+                window.globalstep--;
+                clearInterval(window.stepper);
+            }
         }, 250);
+
+        $('#next').click(function() {
+            window.globalstep++;
+            console.log("Stepping to " + window.globalstep);
+            runFunction('step' + window.globalstep, []);
+        });
+
+        $('#previous').click(function() {
+            window.globalstep--;
+            console.log("Stepping to " + window.globalstep);
+            runFunction('step' + window.globalstep, []);
+        });
 
         </script>
     </body>
