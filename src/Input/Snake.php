@@ -48,6 +48,18 @@ class Snake
     }
 
     /**
+     * Returns normalised simple x/y vectors for moving to the apple.
+     */
+    public function scoreVectors() {
+        $xa = $this->applepos[0];
+        $ya = $this->applepos[1];
+        $xb = $this->snakepos[0][0];
+        $yb = $this->snakepos[0][1];
+
+        return array($xa == $xb ? 0 : ($xa < $xb ? 1 : -1), $ya == $yb ? 0 : ($ya > $yb ? 1 : -1));
+    }
+
+    /**
      * Return true if the given x,y are within screen space.
      */
     protected function clamp($x, $y) {

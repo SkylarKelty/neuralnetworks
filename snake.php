@@ -1,6 +1,6 @@
 <?php
 require_once(dirname(__FILE__) . '/lib.php');
-
+/*
 $network = new KeltyNN\Networks\FFMLFlexPerceptron(16, 0, 4);
 $network->setDesignerMode();
 $trainer = new KeltyNN\Trainers\Genetic($network);
@@ -30,17 +30,19 @@ $trainer->run(function($ontick) {
     }
 
     return $gamespace->turns + ($gamespace->score * 2);
-});
+});*/
 
 // Grab the best result.
-$network = $trainer->bestNetwork();
+//$network = $trainer->bestNetwork();
+
+$network = KeltyNN\NeuralNetwork::loadfile(dirname(__FILE__) . '/trained/game/snake/movenet.nn');
 
 // Run through the chosen network and record its progress.
 $gamespace = new \KeltyNN\Input\Snake(50, 50);
 $stages = array($gamespace->exportNormal(false));
 for ($i = 0; $i < 1000; $i++) {
     // Get the space around the head.
-    $space = $gamespace->exportSnakeSpace(4, 4);
+    /*$space = $gamespace->exportSnakeSpace(4, 4);
     // Translate to flattened array.
     $arr = array();
     foreach ($space as $x => $y) {
@@ -49,11 +51,14 @@ for ($i = 0; $i < 1000; $i++) {
         }
     }
     // Get the network to calculate the next move.
-    $moves = $network->calculate($gamespace->exportSnakeSpace(4, 4));
-    foreach ($moves as $direction => $value) {
-        if ($value > 0 && $gamespace->changeDirection($direction)) {
-            break;
-        }
+    $moves = $network->calculate($arr);
+    */
+
+    $moves = $network->calculate($gamespace->scoreVectors());
+    arsort($moves);
+    $direction = reset($moves);
+    if ($direction > 0.5) {
+        $gamespace->changeDirection($direction);
     }
 
     $gamespace->tick();

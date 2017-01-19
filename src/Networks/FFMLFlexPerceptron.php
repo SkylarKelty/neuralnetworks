@@ -127,7 +127,7 @@ class FFMLFlexPerceptron extends FFMLPerceptron
     /**
      * Return a random edge in this network.
      */
-    public function getRandomEdge($fromlayers) {
+    public function getRandomEdge() {
         $layer = array_rand($this->edgeWeight);
         $node = array_rand($this->edgeWeight[$layer]);
         $to = array_rand($this->edgeWeight[$layer][$node]);

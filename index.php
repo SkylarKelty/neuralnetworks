@@ -10,7 +10,7 @@ foreach ($iterator as $file) {
     }
 }
 
-$networkstr = 'trained/maths/basic/flex_xor.nn';
+$networkstr = 'trained/maths/basic/xor.nn';
 if (isset($_GET['net']) && in_array($_GET['net'], $validNets)) {
     $networkstr = $_GET['net'];
 }
